@@ -265,7 +265,7 @@ body {
   width: 550px;
   height: auto;
   object-fit: contain;
-  /* Logo est sur fond noir → on le rend blanc pour le panel bleu */
+  /* Logo est sur fond noir → on le rend blanc pour le panel  */
   filter: brightness(0) invert(1);
   animation: floatLogo 3.5s ease-in-out infinite;
 }
@@ -296,6 +296,7 @@ body {
   height: 40px;
   font-size: 1.1rem;
   cursor: pointer;
+  -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   transition: background 0.3s, transform 0.2s;
   z-index: 100;
