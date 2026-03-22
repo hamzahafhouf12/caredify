@@ -1,0 +1,75 @@
+/* ── Register extras ── */
+
+.register-container {
+  min-height: 580px;
+}
+
+/* Nom + Prénom côte à côte */
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.input-row .input-group {
+  flex: 1;
+}
+
+/* Select rôle */
+.register-select {
+  width: 100%;
+  padding: 13px 16px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: 'Nunito', sans-serif;
+  color: var(--text-dark);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.4s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aab8c8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.register-select:focus {
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.15);
+  background-color: var(--white);
+}
+
+.dark .register-select {
+  background-color: var(--dark-input-bg, #243447);
+  border-color: var(--dark-input-border, #2d4a6a);
+  color: var(--dark-text, #e0eaf5);
+}
+
+/* Message d'erreur */
+.error-message {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+}
+
+.dark .error-message {
+  background: #2d1f1f;
+  border-color: #7b3030;
+  color: #fc8181;
+}
+
+/* Lien Se connecter */
+.register-login-link {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.dark .register-login-link {
+  color: var(--dark-muted);
+}

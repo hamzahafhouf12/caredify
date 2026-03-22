@@ -1,12 +1,14 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"   // ✅ Ajout
 import "./login.css"
-import caredifyLogo from "../assets/caredify-logo.png"  // ← ton fichier logo
+import caredifyLogo from "../assets/caredify-logo.png"
 
 function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [darkMode, setDarkMode] = useState(false)
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()                  // ✅ Ajout
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -14,6 +16,7 @@ function Login() {
     setTimeout(() => {
       console.log(email, password)
       setLoading(false)
+      navigate("/")
     }, 1200)
   }
 
@@ -24,9 +27,7 @@ function Login() {
         {/* LEFT PANEL */}
         <div className="login-left">
 
-          {/* Logo + nom en haut à gauche */}
           <div className="brand-header">
-            
             <span className="brand-name">Caredify</span>
           </div>
 
@@ -34,7 +35,9 @@ function Login() {
             <h2 className="login-title">Connexion</h2>
             <p className="login-subtitle">Bienvenue ! Veuillez vous connecter à votre compte</p>
 
-            <div className="login-form">
+            {/* ✅ <form> au lieu de <div> */}
+            <form className="login-form" onSubmit={handleSubmit}>
+
               <div className="input-group">
                 <input
                   type="email"
@@ -55,16 +58,31 @@ function Login() {
                 />
               </div>
 
-              <a href="#" className="forgot-link">Mot de passe oublié ?</a>
+              <span onClick={() => navigate("/otp")} className="forgot-link" style={{ cursor:"pointer" }}>
+               Mot de passe oublié ?
+               </span>
 
               <button
+                type="submit"
                 className={`login-btn ${loading ? "loading" : ""}`}
-                onClick={handleSubmit}
                 disabled={loading}
               >
                 {loading ? <span className="spinner" /> : "Connexion"}
               </button>
-            </div>
+
+              {/* ✅ Lien vers Register */}
+              <p style={{ textAlign: "center", fontSize: "0.82rem", color: "var(--text-muted)", marginTop: "4px" }}>
+                Pas encore de compte ?{" "}
+                <span
+                  onClick={() => navigate("/register")}
+                  className="forgot-link"
+                  style={{ cursor: "pointer" }}
+                >
+                  S'inscrire
+                </span>
+              </p>
+
+            </form>
           </div>
         </div>
 
@@ -76,7 +94,6 @@ function Login() {
               alt="Caredify Logo"
               className="logo-icon"
             />
-            
           </div>
         </div>
 
