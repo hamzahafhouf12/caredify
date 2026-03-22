@@ -9,7 +9,6 @@ function Login() {
   const roleLabel = role ? ROLE_LABELS[role] : null
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [darkMode, setDarkMode] = useState(false)
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -24,10 +23,7 @@ function Login() {
   }
 
   return (
-    <AuthLayout
-      darkMode={darkMode}
-      onToggleDark={() => setDarkMode((d) => !d)}
-    >
+    <AuthLayout>
       <h2 className="login-title">Connexion</h2>
       <p className="login-subtitle">
         {roleLabel
@@ -86,7 +82,7 @@ function Login() {
           {loading ? <span className="spinner" /> : "Connexion"}
         </button>
 
-        <p className="login-page__footer">
+        <p className="auth-form__footer">
           Pas encore de compte ?{" "}
           <span
             onClick={() => navigate("/register")}

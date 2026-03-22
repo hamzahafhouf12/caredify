@@ -5,7 +5,6 @@ import { ROLES } from "../../constants/roles"
 import "./RoleSelect.css"
 
 function RoleSelect() {
-  const [darkMode, setDarkMode] = useState(false)
   const [selected, setSelected] = useState(null)
   const navigate = useNavigate()
 
@@ -17,10 +16,7 @@ function RoleSelect() {
   }
 
   return (
-    <AuthLayout
-      darkMode={darkMode}
-      onToggleDark={() => setDarkMode((d) => !d)}
-    >
+    <AuthLayout>
       <h2 className="login-title">Choix du rôle</h2>
       <p className="login-subtitle">
         Sélectionnez votre rôle pour continuer vers la connexion

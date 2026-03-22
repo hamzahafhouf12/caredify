@@ -1,16 +1,12 @@
-import DashboardShell from "../../components/layout/DashboardShell"
-import "./AdminDashboard.css"
+import DashboardRoleView from "../../components/dashboard/DashboardRoleView"
 
 function AdminDashboard() {
   return (
-    <DashboardShell
+    <DashboardRoleView
       title="Espace administrateur"
       description="Gestion des comptes, des cliniques et des paramètres globaux."
-    >
-      <section className="dashboard-placeholder admin-dashboard__body">
-        <p>Contenu du tableau de bord admin à brancher sur l&apos;API.</p>
-      </section>
-    </DashboardShell>
+      placeholder="Contenu du tableau de bord admin à brancher sur l'API."
+    />
   )
 }
 

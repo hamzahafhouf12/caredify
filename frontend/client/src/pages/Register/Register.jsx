@@ -5,7 +5,6 @@ import { ROLES } from "../../constants/roles"
 import "./Register.css"
 
 function Register() {
-  const [darkMode, setDarkMode] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const navigate = useNavigate()
@@ -59,18 +58,14 @@ function Register() {
   }
 
   return (
-    <AuthLayout
-      darkMode={darkMode}
-      onToggleDark={() => setDarkMode((d) => !d)}
-      containerClassName="register-container"
-    >
+    <AuthLayout containerClassName="register-container">
       <h2 className="login-title">Inscription</h2>
       <p className="login-subtitle">
         Créez votre compte pour accéder à la plateforme
       </p>
 
       <form className="login-form" onSubmit={handleSubmit}>
-        {error ? <p className="error-message">{error}</p> : null}
+        {error ? <p className="auth-form__error">{error}</p> : null}
 
         <div className="input-row">
           <div className="input-group">
@@ -155,7 +150,7 @@ function Register() {
           {loading ? <span className="spinner" /> : "Créer le compte"}
         </button>
 
-        <p className="register-login-link">
+        <p className="auth-form__footer">
           Déjà un compte ?{" "}
           <span
             onClick={() => navigate("/login")}

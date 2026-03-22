@@ -123,7 +123,6 @@ function OTPVerify() {
       <ThemeToggle
         darkMode={darkMode}
         onToggle={() => setDarkMode((d) => !d)}
-        className="otp-theme-toggle"
       />
     </div>
   )

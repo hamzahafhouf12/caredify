@@ -1,4 +1,4 @@
-/* Page inscription */
+/* Page inscription — erreurs et pied de formulaire : auth-shell (.auth-form__*) */
 
 .register-container {
   min-height: 580px;
@@ -20,7 +20,7 @@
   border: 1.5px solid var(--input-border);
   border-radius: 8px;
   font-size: 0.88rem;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   color: var(--text-dark);
   outline: none;
   cursor: pointer;
@@ -38,38 +38,7 @@
 }
 
 .dark .register-select {
-  background-color: var(--dark-input-bg, #243447);
-  border-color: var(--dark-input-border, #2d4a6a);
-  color: var(--dark-text, #e0eaf5);
-}
-
-.error-message {
-  color: #e53e3e;
-  font-size: 0.8rem;
-  background: #fff5f5;
-  border: 1px solid #fed7d7;
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-bottom: 4px;
-}
-
-.dark .error-message {
-  background: #2d1f1f;
-  border-color: #7b3030;
-  color: #fc8181;
-}
-
-.register-login-link {
-  text-align: center;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
-
-.register-login-link .forgot-link {
-  cursor: pointer;
-}
-
-.dark .register-login-link {
-  color: var(--dark-muted);
+  background-color: var(--dark-input-bg);
+  border-color: var(--dark-input-border);
+  color: var(--dark-text);
 }

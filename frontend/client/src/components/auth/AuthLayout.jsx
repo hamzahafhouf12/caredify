@@ -1,11 +1,14 @@
+import { useState } from "react"
 import caredifyLogo from "../../assets/caredify-logo.png"
 import "./auth-shell.css"
 import ThemeToggle from "../ThemeToggle"
 
 /**
  * Mise en page commune : panneau formulaire + panneau logo (écrans auth / choix rôle).
+ * Le thème clair/sombre est géré ici pour éviter de le dupliquer sur chaque page.
  */
-function AuthLayout({ darkMode, onToggleDark, containerClassName, children }) {
+function AuthLayout({ containerClassName, children }) {
+  const [darkMode, setDarkMode] = useState(false)
   const containerClass = ["login-container", containerClassName].filter(Boolean).join(" ")
 
   return (
@@ -23,7 +26,10 @@ function AuthLayout({ darkMode, onToggleDark, containerClassName, children }) {
           </div>
         </div>
       </div>
-      <ThemeToggle darkMode={darkMode} onToggle={onToggleDark} />
+      <ThemeToggle
+        darkMode={darkMode}
+        onToggle={() => setDarkMode((d) => !d)}
+      />
     </div>
   )
 }

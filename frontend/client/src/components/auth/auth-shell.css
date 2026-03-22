@@ -1,33 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Orbitron:wght@700;900&display=swap');
-
-/* Variables + mise en page commune des écrans AuthLayout (connexion, inscription, choix de rôle) */
-:root {
-  --blue-primary: #2f80ed;
-  --blue-light: #8fb3d9;
-  --blue-bg-light: #c8dff0;
-  --blue-right-light: #a8c8e8;
-  --white: #ffffff;
-  --text-dark: #1a1a2e;
-  --text-muted: #666;
-  --input-border: #d0dce8;
-  --input-bg: #f7fafd;
-  --shadow: 0 20px 60px rgba(47, 128, 237, 0.15);
-
-  --dark-bg: #0d1b2a;
-  --dark-panel: #1a2a3d;
-  --dark-right: #1c3354;
-  --dark-input-bg: #243447;
-  --dark-input-border: #2d4a6a;
-  --dark-text: #e0eaf5;
-  --dark-muted: #7a9ab5;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Nunito', sans-serif;
-  background: var(--blue-bg-light);
-}
+/* Mise en page AuthLayout — couleurs et reset dans styles/tokens.css (importé depuis main.jsx) */
 
 .login-wrapper {
   display: flex;
@@ -170,6 +141,37 @@ body {
   text-decoration: underline;
 }
 
+.auth-form__error {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 4px;
+}
+
+.dark .auth-form__error {
+  background: #2d1f1f;
+  border-color: #7b3030;
+  color: #fc8181;
+}
+
+.auth-form__footer {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.auth-form__footer .forgot-link {
+  cursor: pointer;
+}
+
+.dark .auth-form__footer {
+  color: var(--dark-muted);
+}
+
 .login-btn {
   padding: 13px;
   background: var(--blue-primary);
@@ -268,27 +270,6 @@ body {
   color: var(--white);
   letter-spacing: 0.18em;
   text-shadow: 0 4px 16px rgba(0,0,0,0.15);
-}
-
-.theme-toggle {
-  position: fixed;
-  top: 18px;
-  right: 22px;
-  background: rgba(255,255,255,0.25);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: background 0.3s, transform 0.2s;
-  z-index: 100;
-}
-
-.theme-toggle:hover {
-  background: rgba(255,255,255,0.45);
-  transform: scale(1.1);
 }
 
 @media (max-width: 640px) {

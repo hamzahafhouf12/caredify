@@ -1,3 +1,5 @@
+import "./ThemeToggle.css"
+
 function ThemeToggle({ darkMode, onToggle, className = "theme-toggle" }) {
   return (
     <button

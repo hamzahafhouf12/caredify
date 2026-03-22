@@ -9,6 +9,7 @@ caredify/
 ├── frontend/client/
 │   └── src/
 │       ├── components/     # UI partagée (auth, layout, thème)
+│       ├── styles/         # tokens.css (variables globales, import dans main.jsx)
 │       ├── constants/      # Données figées (ex. rôles)
 │       ├── pages/          # Une route ≈ un dossier (PageName/PageName.jsx + .css)
 │       └── assets/

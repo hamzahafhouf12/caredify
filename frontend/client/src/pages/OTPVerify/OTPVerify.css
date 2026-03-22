@@ -1,29 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Orbitron:wght@700;900&display=swap');
-
-:root {
-  --blue-primary: #2f80ed;
-  --blue-bg-light: #c8dff0;
-  --white: #ffffff;
-  --text-dark: #1a1a2e;
-  --text-muted: #666;
-  --shadow: 0 20px 60px rgba(47, 128, 237, 0.15);
-  --dark-bg: #0d1b2a;
-  --dark-card: #1e1e1e;
-  --dark-input: #243447;
-  --dark-input-border: #2d4a6a;
-  --dark-text: #e0eaf5;
-  --dark-muted: #7a9ab5;
-}
-
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Nunito', sans-serif;
-}
+/* Page OTP — variables et reset : styles/tokens.css */
 
 .otp-wrapper {
   display: flex;
@@ -82,7 +57,7 @@ body {
 }
 
 .otp-brand {
-  font-family: 'Orbitron', sans-serif;
+  font-family: "Orbitron", sans-serif;
   font-weight: 900;
   font-size: 1rem;
   color: var(--text-dark);
@@ -94,7 +69,7 @@ body {
 }
 
 .otp-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--blue-primary);
@@ -125,10 +100,10 @@ body {
   text-align: center;
   font-size: 1.3rem;
   font-weight: 700;
-  font-family: 'Poppins', sans-serif;
-  border: 1.5px solid #d0dce8;
+  font-family: "Poppins", sans-serif;
+  border: 1.5px solid var(--input-border);
   border-radius: 8px;
-  background: #f7fafd;
+  background: var(--input-bg);
   color: var(--text-dark);
   outline: none;
   transition: border-color 0.25s, box-shadow 0.25s, background 0.4s;
@@ -146,7 +121,7 @@ body {
 }
 
 .otp-wrapper.dark .otp-box {
-  background: var(--dark-input);
+  background: var(--dark-input-bg);
   border-color: var(--dark-input-border);
   color: var(--dark-text);
 }
@@ -206,7 +181,7 @@ body {
   border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 700;
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   cursor: pointer;
   letter-spacing: 0.04em;
   transition: background 0.25s, transform 0.15s, box-shadow 0.25s;
@@ -254,36 +229,15 @@ body {
 .otp-spinner {
   width: 18px;
   height: 18px;
-  border: 2.5px solid rgba(255,255,255,0.35);
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
   border-top-color: white;
   border-radius: 50%;
-  animation: otpSpin 0.7s linear infinite;
+  animation: spin 0.7s linear infinite;
   display: inline-block;
 }
 
-@keyframes otpSpin {
+@keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-.otp-theme-toggle {
-  position: fixed;
-  top: 18px;
-  right: 22px;
-  background: rgba(255,255,255,0.25);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: background 0.3s, transform 0.2s;
-  z-index: 100;
-}
-
-.otp-theme-toggle:hover {
-  background: rgba(255,255,255,0.45);
-  transform: scale(1.1);
 }
 
 @media (max-width: 420px) {
