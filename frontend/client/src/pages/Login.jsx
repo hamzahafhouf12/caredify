@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import "./login.css"
 import caredifyLogo from "../assets/caredify-logo.png"  // ← ton fichier logo
 
@@ -7,14 +8,53 @@ function Login() {
   const [password, setPassword] = useState("")
   const [darkMode, setDarkMode] = useState(false)
   const [loading, setLoading] = useState(false)
+  
+  const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const [errorMSG, setErrorMSG] = useState("")
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
-      console.log(email, password)
+    setErrorMSG("")
+    
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Erreur de connexion")
+      }
+      
+      // Stockage des informations
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("user", JSON.stringify(data.user))
+      
+      console.log("Logged in:", data.user)
+      
+      // Redirection dynamique basée sur la route App.jsx (/admin, /clinique, /cardiologue)
+      if (data.user.role === "admin") {
+        navigate("/admin")
+      } else if (data.user.role === "clinique") {
+        navigate("/clinique")
+      } else if (data.user.role === "cardiologue") {
+        navigate("/cardiologue")
+      } else {
+        navigate("/")
+      }
+      
+    } catch (err) {
+      setErrorMSG(err.message)
+    } finally {
       setLoading(false)
-    }, 1200)
+    }
   }
 
   return (
@@ -30,12 +70,14 @@ function Login() {
             <span className="brand-name">Caredify</span>
           </div>
 
-          <div className="login-form-area">
-            <h2 className="login-title">Connexion</h2>
-            <p className="login-subtitle">Bienvenue ! Veuillez vous connecter à votre compte</p>
+            <div className="login-form-area">
+              <h2 className="login-title">Connexion</h2>
+              <p className="login-subtitle">Bienvenue ! Veuillez vous connecter à votre compte</p>
+              
+              {errorMSG && <p className="error-message" style={{color: 'red', textAlign: 'center', marginBottom: '10px'}}>{errorMSG}</p>}
 
-            <div className="login-form">
-              <div className="input-group">
+              <div className="login-form">
+                <div className="input-group">
                 <input
                   type="email"
                   placeholder="Email"

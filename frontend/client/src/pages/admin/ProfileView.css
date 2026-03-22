@@ -1,0 +1,131 @@
+.profile-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.profile-large-avatar {
+    width: 120px;
+    height: 120px;
+    background: var(--bg-secondary);
+    border: 4px solid var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color);
+}
+
+.display-name {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.role-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0.5rem 0;
+}
+
+.admin-id {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.profile-details-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+}
+
+.detail-card {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-icon {
+    color: var(--text-secondary);
+}
+
+.detail-content label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.detail-content p {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.security-card {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+.change-pass-btn {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+}
+
+.security-notice {
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.security-notice p {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+    .profile-details-grid {
+        grid-template-columns: 1fr;
+    }
+}

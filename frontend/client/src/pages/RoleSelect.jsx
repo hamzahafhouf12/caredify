@@ -4,9 +4,9 @@ import "./RoleSelect.css"
 import caredifyLogo from "../assets/caredify-logo.png"
 
 const roles = [
-  { id: "admin",    label: "Admin",    icon: "🛡️" },
-  { id: "medecin",  label: "Médecin",  icon: "🩺" },
-  { id: "clinique", label: "Clinique", icon: "🏥" },
+  { id: "admin",       label: "Admin",       icon: "🛡️" },
+  { id: "cardiologue", label: "Cardiologue", icon: "🩺" },
+  { id: "clinique",    label: "Clinique",    icon: "🏥" },
 ]
 
 function RoleSelect() {
@@ -17,7 +17,7 @@ function RoleSelect() {
   const handleSelect = (roleId) => {
     setSelected(roleId)
     setTimeout(() => {
-      navigate(`/login/${roleId}`)
+      navigate('/login')
     }, 350)
   }
 
