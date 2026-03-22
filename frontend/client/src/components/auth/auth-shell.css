@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Orbitron:wght@700;900&display=swap');
 
-/* ── Variables ── */
+/* Variables + mise en page commune des écrans AuthLayout (connexion, inscription, choix de rôle) */
 :root {
   --blue-primary: #2f80ed;
   --blue-light: #8fb3d9;
@@ -13,7 +13,6 @@
   --input-bg: #f7fafd;
   --shadow: 0 20px 60px rgba(47, 128, 237, 0.15);
 
-  /* Dark mode */
   --dark-bg: #0d1b2a;
   --dark-panel: #1a2a3d;
   --dark-right: #1c3354;
@@ -23,7 +22,6 @@
   --dark-muted: #7a9ab5;
 }
 
-/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -31,7 +29,6 @@ body {
   background: var(--blue-bg-light);
 }
 
-/* ── Wrapper ── */
 .login-wrapper {
   display: flex;
   align-items: center;
@@ -46,7 +43,6 @@ body {
   background: var(--dark-bg);
 }
 
-/* ── Card Container ── */
 .login-container {
   display: flex;
   width: 860px;
@@ -62,7 +58,6 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── LEFT PANEL ── */
 .login-left {
   width: 44%;
   background: var(--white);
@@ -82,8 +77,6 @@ body {
   gap: 8px;
   margin-bottom: auto;
 }
-
-
 
 .dark .brand-logo-small {
   filter: brightness(0) invert(1);
@@ -125,7 +118,6 @@ body {
   color: var(--dark-muted);
 }
 
-/* ── Form ── */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -165,7 +157,6 @@ body {
   background: #2a3f58;
 }
 
-/* ── Forgot ── */
 .forgot-link {
   font-size: 0.78rem;
   color: var(--blue-primary);
@@ -179,7 +170,6 @@ body {
   text-decoration: underline;
 }
 
-/* ── Button ── */
 .login-btn {
   padding: 13px;
   background: var(--blue-primary);
@@ -213,7 +203,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ── Spinner ── */
 .spinner {
   width: 18px;
   height: 18px;
@@ -227,7 +216,6 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* ── RIGHT PANEL ── */
 .login-right {
   width: 56%;
   background: var(--blue-right-light);
@@ -243,7 +231,6 @@ body {
   background: var(--dark-right);
 }
 
-/* Subtle radial glow */
 .login-right::before {
   content: '';
   position: absolute;
@@ -265,7 +252,6 @@ body {
   width: 550px;
   height: auto;
   object-fit: contain;
-  /* Logo est sur fond noir → on le rend blanc pour le panel bleu */
   filter: brightness(0) invert(1);
   animation: floatLogo 3.5s ease-in-out infinite;
 }
@@ -284,7 +270,6 @@ body {
   text-shadow: 0 4px 16px rgba(0,0,0,0.15);
 }
 
-/* ── Theme Toggle ── */
 .theme-toggle {
   position: fixed;
   top: 18px;
@@ -306,7 +291,6 @@ body {
   transform: scale(1.1);
 }
 
-/* ── Responsive ── */
 @media (max-width: 640px) {
   .login-container {
     flex-direction: column;

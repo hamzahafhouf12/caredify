@@ -1,10 +1,9 @@
-/* ── Register extras ── */
+/* Page inscription */
 
 .register-container {
   min-height: 580px;
 }
 
-/* Nom + Prénom côte à côte */
 .input-row {
   display: flex;
   gap: 10px;
@@ -14,7 +13,6 @@
   flex: 1;
 }
 
-/* Select rôle */
 .register-select {
   width: 100%;
   padding: 13px 16px;
@@ -45,7 +43,6 @@
   color: var(--dark-text, #e0eaf5);
 }
 
-/* Message d'erreur */
 .error-message {
   color: #e53e3e;
   font-size: 0.8rem;
@@ -62,12 +59,15 @@
   color: #fc8181;
 }
 
-/* Lien Se connecter */
 .register-login-link {
   text-align: center;
   font-size: 0.82rem;
   color: var(--text-muted);
   margin-top: 4px;
+}
+
+.register-login-link .forgot-link {
+  cursor: pointer;
 }
 
 .dark .register-login-link {

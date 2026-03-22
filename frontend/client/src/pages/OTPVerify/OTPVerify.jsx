@@ -1,7 +1,8 @@
 import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
+import caredifyLogo from "../../assets/caredify-logo.png"
+import ThemeToggle from "../../components/ThemeToggle"
 import "./OTPVerify.css"
-import caredifyLogo from "../assets/caredify-logo.png"
 
 function OTPVerify() {
   const [darkMode, setDarkMode] = useState(false)
@@ -33,7 +34,9 @@ function OTPVerify() {
     e.preventDefault()
     const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6)
     const newOtp = ["", "", "", "", "", ""]
-    pasted.split("").forEach((char, i) => { newOtp[i] = char })
+    pasted.split("").forEach((char, i) => {
+      newOtp[i] = char
+    })
     setOtp(newOtp)
     inputs.current[Math.min(pasted.length, 5)].focus()
   }
@@ -41,14 +44,14 @@ function OTPVerify() {
   const handleConfirm = () => {
     const code = otp.join("")
     if (code.length < 6) {
-      setError("Veuillez entrer les 6 chiffres du code OTP.")
+      setError("Veuillez entrer les 6 chiffres du code.")
       return
     }
     setLoading(true)
     setTimeout(() => {
       console.log("OTP confirmé :", code)
       setLoading(false)
-      navigate("/")
+      navigate("/login")
     }, 1200)
   }
 
@@ -63,26 +66,22 @@ function OTPVerify() {
   return (
     <div className={`otp-wrapper ${darkMode ? "dark" : ""}`}>
       <div className="otp-card">
-
-        {/* ✅ Logo en haut */}
         <div className="otp-logo-area">
-          <img
-            src={caredifyLogo}
-            alt="Caredify"
-            className="otp-logo"
-          />
-          
+          <img src={caredifyLogo} alt="Caredify" className="otp-logo" />
         </div>
 
-        {/* Title */}
-        <h2 className="otp-title">Enter OTP Code</h2>
+        <h2 className="otp-title">Code de vérification</h2>
+        <p className="otp-subtitle">
+          Saisissez le code à 6 chiffres reçu par e-mail ou SMS
+        </p>
 
-        {/* 6 boîtes OTP */}
         <div className="otp-inputs">
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={(el) => (inputs.current[index] = el)}
+              ref={(el) => {
+                inputs.current[index] = el
+              }}
               type="text"
               inputMode="numeric"
               maxLength={1}
@@ -91,48 +90,41 @@ function OTPVerify() {
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={handlePaste}
               className={`otp-box ${digit ? "otp-filled" : ""}`}
+              aria-label={`Chiffre ${index + 1}`}
             />
           ))}
         </div>
 
-        {/* Error */}
-        {error && <p className="otp-error">{error}</p>}
+        {error ? <p className="otp-error">{error}</p> : null}
+        {resent ? <p className="otp-resent">Un nouveau code a été envoyé.</p> : null}
 
-        {/* Resent message */}
-        {resent && <p className="otp-resent">✅ Code renvoyé !</p>}
+        <button type="button" className="otp-resend" onClick={handleResend}>
+          Renvoyer le code
+        </button>
 
-        {/* Resend link */}
-        <span className="otp-resend" onClick={handleResend}>
-          Resend OTP Code
-        </span>
-
-        {/* Confirm */}
         <button
+          type="button"
           className={`otp-btn otp-btn-confirm ${loading ? "loading" : ""}`}
           onClick={handleConfirm}
           disabled={loading}
         >
-          {loading ? <span className="otp-spinner" /> : "Confirm"}
+          {loading ? <span className="otp-spinner" /> : "Confirmer"}
         </button>
 
-        {/* Back */}
         <button
+          type="button"
           className="otp-btn otp-btn-back"
           onClick={() => navigate(-1)}
         >
-          Back
+          Retour
         </button>
-
       </div>
 
-      {/* Dark mode toggle */}
-      <button
+      <ThemeToggle
+        darkMode={darkMode}
+        onToggle={() => setDarkMode((d) => !d)}
         className="otp-theme-toggle"
-        onClick={() => setDarkMode(!darkMode)}
-        title="Changer de thème"
-      >
-        {darkMode ? "☀️" : "🌙"}
-      </button>
+      />
     </div>
   )
 }

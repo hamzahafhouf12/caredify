@@ -1,0 +1,30 @@
+/* Page connexion — le cadre commun est dans components/auth/auth-shell.css */
+
+.login-page__switch-role {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.login-page__switch-role .forgot-link {
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.login-page__forgot {
+  cursor: pointer;
+}
+
+.login-page__footer {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.login-page__footer .forgot-link {
+  cursor: pointer;
+}
+
+.dark .login-page__footer {
+  color: var(--dark-muted);
+}

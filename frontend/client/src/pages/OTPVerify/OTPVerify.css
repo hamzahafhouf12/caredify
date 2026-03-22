@@ -25,7 +25,6 @@ body {
   font-family: 'Nunito', sans-serif;
 }
 
-/* ── Wrapper ── */
 .otp-wrapper {
   display: flex;
   align-items: center;
@@ -40,7 +39,6 @@ body {
   background: var(--dark-bg);
 }
 
-/* ── Card ── */
 .otp-card {
   background: var(--white);
   border-radius: 20px;
@@ -51,7 +49,7 @@ body {
   align-items: center;
   gap: 16px;
   box-shadow: var(--shadow);
-  animation: fadeUp 0.6s ease both;
+  animation: otpFadeUp 0.6s ease both;
   transition: background 0.4s;
 }
 
@@ -59,12 +57,11 @@ body {
   background: var(--dark-card);
 }
 
-@keyframes fadeUp {
+@keyframes otpFadeUp {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Logo ── */
 .otp-logo-area {
   display: flex;
   flex-direction: column;
@@ -96,7 +93,6 @@ body {
   color: var(--dark-text);
 }
 
-/* ── Title ── */
 .otp-title {
   font-family: 'Poppins', sans-serif;
   font-size: 1.1rem;
@@ -104,7 +100,19 @@ body {
   color: var(--blue-primary);
 }
 
-/* ── OTP Inputs ── */
+.otp-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.4;
+  margin: -8px 0 4px;
+  max-width: 280px;
+}
+
+.otp-wrapper.dark .otp-subtitle {
+  color: var(--dark-muted);
+}
+
 .otp-inputs {
   display: flex;
   gap: 10px;
@@ -147,7 +155,6 @@ body {
   background: #2a3f58;
 }
 
-/* ── Error ── */
 .otp-error {
   color: #e53e3e;
   font-size: 0.78rem;
@@ -165,13 +172,11 @@ body {
   color: #fc8181;
 }
 
-/* ── Resent ── */
 .otp-resent {
   font-size: 0.78rem;
   color: #38a169;
 }
 
-/* ── Resend link ── */
 .otp-resend {
   font-size: 0.78rem;
   color: var(--text-muted);
@@ -179,6 +184,10 @@ body {
   transition: color 0.2s;
   align-self: flex-start;
   margin-top: -4px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0;
 }
 
 .otp-resend:hover {
@@ -190,7 +199,6 @@ body {
   color: var(--dark-muted);
 }
 
-/* ── Buttons ── */
 .otp-btn {
   width: 100%;
   padding: 13px;
@@ -243,22 +251,20 @@ body {
   background: #344d63;
 }
 
-/* ── Spinner ── */
 .otp-spinner {
   width: 18px;
   height: 18px;
   border: 2.5px solid rgba(255,255,255,0.35);
   border-top-color: white;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: otpSpin 0.7s linear infinite;
   display: inline-block;
 }
 
-@keyframes spin {
+@keyframes otpSpin {
   to { transform: rotate(360deg); }
 }
 
-/* ── Theme Toggle ── */
 .otp-theme-toggle {
   position: fixed;
   top: 18px;
@@ -280,7 +286,6 @@ body {
   transform: scale(1.1);
 }
 
-/* ── Responsive ── */
 @media (max-width: 420px) {
   .otp-card {
     width: 94vw;

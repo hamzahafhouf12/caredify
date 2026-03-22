@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap");
+
+.dashboard-shell {
+  min-height: 100vh;
+  font-family: "Nunito", system-ui, sans-serif;
+  background: linear-gradient(160deg, #e8f1fb 0%, #f5f8fc 45%, #eef4fb 100%);
+  color: #1a1a2e;
+}
+
+.dashboard-shell__header {
+  padding: 1.5rem 1.75rem 1rem;
+  border-bottom: 1px solid rgba(47, 128, 237, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.dashboard-shell__brand-row {
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-shell__brand {
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: #2f80ed;
+  text-decoration: none;
+}
+
+.dashboard-shell__brand:hover {
+  text-decoration: underline;
+}
+
+.dashboard-shell__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.dashboard-shell__desc {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: #5a6b7d;
+}
+
+.dashboard-shell__main {
+  padding: 1.5rem 1.75rem 2rem;
+  max-width: 1200px;
+}
+
+.dashboard-placeholder {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px dashed rgba(47, 128, 237, 0.35);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.95rem;
+  color: #5a6b7d;
+}
