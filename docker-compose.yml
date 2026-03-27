@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  # ----------------------------------------
+  # FRONTEND (React / Vite)
+  # ----------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: caredify-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      # L'URL du backend pour que le frontend puisse faire ses requêtes
+      - VITE_API_URL=http://localhost:5000/api
+    volumes:
+      # Bind mount : sync les fichiers locaux vers le conteneur pour le Hot Reload
+      - ./frontend:/app
+      # Empêche d'écraser le dossier node_modules du conteneur avec celui de la machine hôte
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: always
+
+  # ----------------------------------------
+  # BACKEND (Node.js / Express)
+  # ----------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: caredify-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      # Connexion à MongoDB via le nom du service "mongo"
+      - MONGO_URI=mongodb://mongo:27017/caredify
+    volumes:
+      # Bind mount pour le backend (nodemon redémarrera le serveur)
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - mongo
+    restart: always
+
+  # ----------------------------------------
+  # DATABASE (MongoDB)
+  # ----------------------------------------
+  mongo:
+    image: mongo:latest
+    container_name: caredify-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      # Volume persistant Docker pour ne pas perdre la DB entre les lancements
+      - mongo-data:/data/db
+    restart: always
+
+volumes:
+  mongo-data:

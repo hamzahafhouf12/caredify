@@ -1,0 +1,143 @@
+.historique-page {
+  min-height: 100vh;
+  background-color: #f6f8fb; /* Light background per mockup */
+  padding: 2rem 4rem;
+  font-family: inherit;
+  color: #1a1e23;
+}
+.historique-page.cdash--dark {
+  background-color: #1a1e23; /* Matching the deep dark background of the app */
+  color: #eeeeee;
+}
+
+.historique-header {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 2.5rem;
+}
+
+.historique-back-link {
+  position: absolute;
+  left: 0;
+  color: #2f80ed;
+  text-decoration: underline;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+.historique-back-link:hover {
+  color: #1a6dd4;
+}
+
+.historique-title {
+  width: 100%;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+
+.historique-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.historique-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Match soft shadow from mockup */
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+}
+.cdash--dark .historique-card {
+  background: #000000; /* Pure black cards as in mockup */
+  box-shadow: none;
+  border: 1px solid #333333;
+}
+
+.hc-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hc-date {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.cdash--dark .hc-date {
+  color: #ffffff;
+}
+.hc-date strong {
+  font-weight: 700;
+}
+
+.hc-graph {
+  width: 100%;
+  display: flex;
+  align-items: flex-end; /* Align graph to the bottom if needed */
+  flex: 1;
+}
+
+.historique-ecg-graph {
+  opacity: 0.8;
+}
+
+.hc-analysis {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.2rem; /* Spread the three items nicely */
+  width: 220px;
+  font-size: 0.85rem;
+  padding-left: 2rem;
+}
+
+.hc-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Left align labels */
+  text-align: left;
+}
+
+.hc-label {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #1a1e23;
+  margin-bottom: 0.3rem;
+}
+.cdash--dark .hc-label {
+  color: #ffffff;
+}
+
+.hc-value {
+  color: #555;
+  font-size: 0.8rem;
+  padding-left: 1rem; /* Indent the values */
+}
+.cdash--dark .hc-value {
+  color: #cccccc;
+}
+
+.hc-gravite {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.hc-red {
+  color: #ff4d4f; /* Urgent red */
+}
+.hc-black {
+  color: #333; /* Modéré dark text */
+}
+.cdash--dark .hc-black {
+  color: #cccccc;
+}

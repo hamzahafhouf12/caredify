@@ -32,7 +32,7 @@ Ouvrir l’URL indiquée dans le terminal (souvent `http://localhost:5173`).
 
 | Route | Écran |
 |-------|--------|
-| `/` | Choix du rôle (admin, médecin, clinique) |
+| `/` | Choix du rôle (admin, cardiologue, clinique) |
 | `/login` ou `/login/:role` | Connexion |
 | `/register` | Inscription |
 | `/otp` | Vérification OTP (mot de passe oublié) |

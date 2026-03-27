@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copier uniquement package.json pour optimiser le cache Docker
+COPY package*.json ./
+
+# Installation des paquets normaux et de nodemon (dépendance dev) pour le hot-reload
+RUN npm install
+
+# Exposer le port de l'API Backend
+EXPOSE 5000
+
+# La commande dev utilisera nodemon pour redémarrer le serveur si le code change
+CMD ["npm", "run", "dev"]

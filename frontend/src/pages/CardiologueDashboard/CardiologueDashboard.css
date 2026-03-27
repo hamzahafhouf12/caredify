@@ -1,0 +1,164 @@
+/* ═══════════════════════════════════════════════════════════
+   Dashboard V3 CSS
+   ═══════════════════════════════════════════════════════════ */
+
+.v3-dashboard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+/* ── HEADER DATE ── */
+.v3-header-date {
+  font-size: 0.9rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.cdash--dark .v3-header-date { color: #ccc; }
+.v3-date-chevron { font-size: 0.7rem; opacity: 0.6; }
+
+/* ── STATS GRID ── */
+.v3-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+.v3-stat-card {
+  padding: 1.5rem;
+  border-radius: 12px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  min-height: 150px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.v3-card--blue { background: #2f80ed; }
+.v3-card--blue-alt { background: #3d9dff; }
+.v3-card--red { 
+  background: #ff3b30; 
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 150px;
+}
+.v3-stat-label { font-size: 1.5rem; font-weight: 500; opacity: 1; }
+.v3-stat-value { font-size: 4rem; font-weight: 700; line-height: 1; }
+
+.v3-alert-text-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.v3-stat-value-large {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.v3-stat-card__icon { font-size: 4.5rem; opacity: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+
+/* ── MIDDLE ROW ── */
+.v3-middle-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.v3-patients-card { padding: 1.25rem; }
+.v3-patients-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+.v3-patient-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+.v3-patient-icon { font-size: 1.1rem; }
+.v3-patient-status { font-weight: 600; }
+.v3-status--blue { color: #2f80ed; }
+.v3-status--blue-light { color: #4099ff; }
+.v3-status--red { color: #ff3b30; }
+
+.v3-vitals-card { 
+  padding: 1.25rem; 
+  background: #2f80ed; 
+  color: #fff; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center;
+}
+.v3-vitals-title { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
+.v3-vitals-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.v3-vital-item { display: flex; justify-content: space-between; font-size: 0.9rem; align-items: center; }
+.v3-vitals-wave-svg { font-size: 1.2rem; }
+
+/* ── MESSAGES ── */
+.v3-messages-card { padding: 1.25rem; }
+.v3-section-title { font-size: 0.9rem; font-weight: 800; margin-bottom: 1rem; }
+.v3-messages-list { display: flex; flex-direction: column; gap: 1rem; }
+.v3-msg-item { display: flex; align-items: center; gap: 1rem; }
+.v3-msg-avatar { width: 32px; height: 32px; font-size: 1.2rem; }
+.v3-msg-content { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
+.v3-msg-name { font-weight: 700; font-size: 0.85rem; }
+.v3-msg-text { font-size: 0.85rem; color: #5a6b7d; }
+.cdash--dark .v3-msg-text { color: #a8bdd4; }
+.v3-msg-time { font-size: 0.75rem; color: #8c98a5; }
+.v3-msg-footer-link { display: block; margin-top: 1rem; font-size: 0.8rem; font-weight: 700; text-decoration: underline; }
+
+/* ── ECG GRID ── */
+.v3-ecg-card { padding: 1.25rem; min-height: 220px; }
+.v3-ecg-grid-container {
+  width: 100%;
+  height: 160px;
+  background-color: #fdf2f2;
+  background-image: 
+    linear-gradient(to right, #f8d7da 1px, transparent 1px),
+    linear-gradient(to bottom, #f8d7da 1px, transparent 1px),
+    linear-gradient(to right, #f1b0b7 5px, transparent 5px),
+    linear-gradient(to bottom, #f1b0b7 5px, transparent 5px);
+  background-size: 10px 10px, 10px 10px, 50px 50px, 50px 50px;
+  border: 1px solid #f1b0b7;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.cdash--dark .v3-ecg-grid-container {
+  opacity: 0.8;
+  filter: invert(1) hue-rotate(180deg);
+}
+.v3-ecg-trace-svg { width: 100%; height: 100%; }
+
+/* ── LINKS ── */
+.v3-link-blue { color: #2f80ed; font-size: 0.75rem; font-weight: 600; text-decoration: none; cursor: pointer; }
+.v3-link-blue:hover { text-decoration: underline; }
+
+/* ── RIGHT PANEL ── */
+.v3-alerts-panel {
+  width: 320px;
+  background: var(--card-bg);
+  border-left: 1px solid var(--border-color);
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+.v3-right-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 1.5rem; }
+.v3-alert-category { display: flex; flex-direction: column; gap: 1.25rem; }
+.v3-cat-title { font-size: 0.85rem; font-weight: 800; margin-bottom: 1rem; }
+.v3-text--red { color: #ff3b30; }
+.v3-text--orange { color: #ff9500; }
+.v3-text--blue { color: #2f80ed; }
+
+.v3-alert-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+.v3-alert-left { display: flex; gap: 0.75rem; }
+.v3-alert-avatar { width: 32px; height: 32px; font-size: 1.2rem; }
+.v3-alert-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.v3-alert-pname { font-weight: 700; font-size: 0.85rem; }
+.v3-alert-detail { font-size: 0.8rem; font-weight: 500; color: #333; }
+.cdash--dark .v3-alert-detail { color: #eee; }
+.v3-alert-link { font-size: 0.7rem; color: #2f80ed; text-decoration: underline; margin-top: 0.2rem; }
+.v3-alert-time { font-size: 0.7rem; color: #8c98a5; white-space: nowrap; margin-top: 0.1rem; }
+
+.v3-alert-divider { height: 1.5px; background: #eee; margin: 1.5rem 0; }
+.cdash--dark .v3-alert-divider { background: #21262d; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1400px) {
+  .v3-alerts-panel { width: 280px; }
+  .v3-middle-row { grid-template-columns: 1fr; }
+}

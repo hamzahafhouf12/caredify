@@ -1,0 +1,19 @@
+# Image légère de Node.js
+FROM node:20-alpine
+
+# Créer et définir le répertoire de travail
+WORKDIR /app
+
+# Copier uniquement package.json et package-lock.json en premier
+# (Optimise le cache Docker : on ne réinstalle les npm modules que si les dépendances changent)
+COPY package*.json ./
+
+# Installation des dépendances
+RUN npm install
+
+# Exposer le port par défaut de Vite
+EXPOSE 5173
+
+# La commande npm run dev lance le frontend en mode hot-reload
+# Note : Vite a besoin de --host pour écouter hors du localhost du conteneur
+CMD ["npm", "run", "dev", "--", "--host"]

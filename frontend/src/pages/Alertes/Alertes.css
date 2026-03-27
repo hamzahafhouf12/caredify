@@ -1,0 +1,125 @@
+/* Alertes Table & Layout Styles */
+
+.alertes-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.alertes-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.alertes-table th {
+  font-weight: 400;
+  color: #6b7c8d;
+  font-size: 0.85rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+.cdash--dark .alertes-table th {
+  color: #a8bdd4;
+  border-bottom-color: #2d4a6a;
+}
+
+.alertes-table td {
+  padding: 1.2rem 1.5rem;
+  font-size: 0.9rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+}
+.cdash--dark .alertes-table td {
+  border-bottom-color: #1e2d42;
+  color: #e0eaf5;
+}
+
+.al-td-check {
+  width: 50px;
+}
+.al-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #2f80ed; /* Matches the checked state nicely if browser supports it */
+}
+
+.al-td-date {
+  font-size: 0.85rem;
+  color: #475569;
+}
+.cdash--dark .al-td-date {
+  color: #cbd5e1;
+}
+
+.al-patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.al-avatar-mini {
+  background: #eef4fb;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: #2f80ed;
+}
+.cdash--dark .al-avatar-mini {
+  background: #2a3f5a;
+  color: #56aaff;
+}
+
+.al-patient-cell strong {
+  font-weight: 600;
+  color: #1e293b;
+}
+.cdash--dark .al-patient-cell strong {
+  color: #f1f5f9;
+}
+
+.al-td-type {
+  color: #334155;
+}
+.cdash--dark .al-td-type {
+  color: #cbd5e1;
+}
+
+.al-gravite {
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.al-red {
+  color: #ef4444; /* Urgent red */
+}
+.al-black {
+  color: #475569; /* Modéré dark text */
+}
+.cdash--dark .al-black {
+  color: #94a3b8;
+}
+
+.al-td-desc {
+  color: #475569;
+  font-size: 0.85rem;
+}
+.cdash--dark .al-td-desc {
+  color: #94a3b8;
+}
+
+.al-link {
+  color: #2f80ed;
+  text-decoration: underline;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.cdash--dark .al-link {
+  color: #3b82f6;
+}
+.al-link:hover {
+  color: #1a6dd4;
+}

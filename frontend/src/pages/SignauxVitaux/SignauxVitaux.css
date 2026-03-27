@@ -1,0 +1,103 @@
+/* ═══════════════════════════════════════════════════════════
+   Signaux Vitaux Page CSS
+   ═══════════════════════════════════════════════════════════ */
+
+.signaux-toolbar {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0; /* Align buttons to the left without card padding */
+}
+
+/* Individual button boxes per Step 874 */
+.signaux-toolbar .patients-btn-icon {
+  background: #fff;
+  border: 1px solid #d1d9e2;
+  border-radius: 6px;
+  width: 32px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.signaux-toolbar .patients-btn-icon:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.signaux-table-card {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin-top: 0.5rem;
+}
+
+.cdash-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cdash-table thead th {
+  font-size: 0.8rem;
+  font-weight: 400; /* Lighter weight per mockup */
+  color: #a8bdcf; /* Precise light grey-blue */
+  text-transform: none;
+  background: transparent;
+  padding: 1rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.cdash-table tbody td {
+  padding: 1.25rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+/* Specific column adjustments for wide layout */
+.cdash-table th:nth-child(1), .cdash-table td:nth-child(1) { width: 140px; }
+.cdash-table th:nth-child(2), .cdash-table td:nth-child(2) { width: 180px; }
+.cdash-table th:nth-child(3), .cdash-table td:nth-child(3) { width: 180px; }
+
+.signaux-td-date {
+  font-size: 0.85rem;
+  color: #5a6b7d;
+  white-space: nowrap;
+}
+.cdash--dark .signaux-td-date { color: #a8bdd4; }
+
+.signaux-td-analyse {
+  font-size: 0.85rem;
+  color: #333;
+}
+.cdash--dark .signaux-td-analyse { color: #eee; }
+
+.signaux-ecg-stack {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.signaux-mini-ecg {
+  opacity: 0.65;
+  transition: opacity 0.2s;
+  width: 75px;
+}
+.signaux-mini-ecg:hover { opacity: 1; }
+
+.cdash-link-action--sm {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #2f80ed;
+  text-decoration: underline;
+}
+.cdash-link-action--sm:hover { color: #1a6dd4; }

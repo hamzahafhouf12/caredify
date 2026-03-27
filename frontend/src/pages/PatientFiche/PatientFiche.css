@@ -1,0 +1,195 @@
+/* ═══════════════════════════════════════════════════════════
+   Patient Fiche Page CSS
+   ═══════════════════════════════════════════════════════════ */
+
+.fiche-container {
+  flex: 1;
+  max-width: 100%;
+}
+
+/* ── HEADER BAR ── */
+.fiche-header-bar {
+  background: #2f80ed;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.fiche-header-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ── INFO CARD ── */
+.fiche-info-card {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem 2.5rem;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+.fiche-info-card__left,
+.fiche-info-card__right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.fiche-patient-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #eef4fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.cdash--dark .fiche-patient-avatar {
+  background: #1c2a3f;
+  border-color: #21262d;
+}
+
+.fiche-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.fiche-info-item {
+  display: flex;
+  gap: 1rem;
+}
+.fiche-info-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  min-width: 120px;
+}
+.fiche-info-value {
+  font-size: 0.85rem;
+  color: #5a6b7d;
+}
+.cdash--dark .fiche-info-value {
+  color: #a8bdd4;
+}
+
+.fiche-info-divider {
+  width: 1px;
+  height: 80px;
+  background: #e6edf5;
+}
+.cdash--dark .fiche-info-divider {
+  background: #21262d;
+}
+
+/* ── SECTIONS ── */
+.fiche-section {
+  margin-bottom: 2rem;
+}
+.fiche-section-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+/* ── VITALS GRID ── */
+.fiche-vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+.fiche-vital-card {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.fiche-vital-card__label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+.fiche-mini-graph {
+  width: 100%;
+  height: 60px;
+}
+
+/* ── ECG CARD ── */
+.fiche-ecg-card {
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+.fiche-ecg-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.fiche-ecg-card__left {
+  flex: 1;
+}
+.fiche-ecg-svg {
+  width: 100%;
+  height: 100px;
+  color: #2f80ed;
+}
+
+/* ── BUTTONS ── */
+.patients-btn-action-blue {
+  background: #2f80ed;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.patients-btn-action-blue:hover {
+  background: #1a6dd4;
+}
+
+/* ── HISTORY TABLE V2 ── */
+.fiche-history-card {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.fiche-v2-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fiche-v2-table thead th {
+  text-align: left;
+  padding: 1.5rem 0.5rem 0.5rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #a8bdcf; /* Light grey-blue per mockup */
+  background: transparent;
+  border: none;
+}
+
+.fiche-v2-table tbody td {
+  padding: 1rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid transparent; /* No visible inner borders per mockup snippet */
+}
+
+.cdash--dark .fiche-v2-table tbody td {
+  color: #eee;
+}
+
+/* Adjusting column widths to match the wide spacing of the mockup */
+.fiche-v2-table th:nth-child(1), .fiche-v2-table td:nth-child(1) { width: 15%; }
+.fiche-v2-table th:nth-child(2), .fiche-v2-table td:nth-child(2) { width: 25%; }
+.fiche-v2-table th:nth-child(3), .fiche-v2-table td:nth-child(3) { width: 20%; }
+.fiche-v2-table th:nth-child(4), .fiche-v2-table td:nth-child(4) { width: 40%; }

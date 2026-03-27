@@ -1,0 +1,211 @@
+/* Page OTP — variables et reset : styles/tokens.css */
+
+.otp-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--blue-bg-light);
+  transition: background 0.4s ease;
+  position: relative;
+}
+
+.otp-wrapper.dark {
+  background: var(--dark-bg);
+}
+
+.otp-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 44px 40px 36px;
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow);
+  animation: otpFadeUp 0.6s ease both;
+  transition: background 0.4s;
+}
+
+.otp-wrapper.dark .otp-card {
+  background: var(--dark-card);
+}
+
+@keyframes otpFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.otp-logo-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.otp-logo {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0);
+}
+
+.otp-wrapper.dark .otp-logo {
+  filter: brightness(0) invert(1);
+}
+
+.otp-brand {
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--text-dark);
+  letter-spacing: 0.15em;
+}
+
+.otp-wrapper.dark .otp-brand {
+  color: var(--dark-text);
+}
+
+.otp-title {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2f80ed;
+  margin-bottom: 0.5rem;
+}
+
+.otp-inputs {
+  display: flex;
+  gap: 12px;
+  margin: 1rem 0 0.5rem 0;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.otp-box {
+  flex: 1;
+  height: 52px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: "Poppins", sans-serif;
+  border: none;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.otp-box:focus {
+  background: #ffffff;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 2px #2f80ed;
+}
+
+.otp-wrapper.dark .otp-box {
+  background: #f1f5f9; /* The mockup shows inputs remain very light grey in dark mode */
+  color: #1e293b;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.otp-wrapper.dark .otp-box:focus {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 2px #2f80ed;
+}
+
+.otp-actions-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.otp-error {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  text-align: center;
+  margin: 0;
+}
+.otp-wrapper.dark .otp-error {
+  color: #fc8181;
+}
+
+.otp-resent {
+  font-size: 0.8rem;
+  color: #38a169;
+  text-align: center;
+  margin: 0;
+}
+
+.otp-resend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.otp-wrapper.dark .otp-resend {
+  color: #ffffff;
+}
+.otp-resend:hover {
+  color: #2f80ed;
+}
+
+.otp-btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 12px; /* Very rounded pill shape like mockup */
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+.otp-btn:hover {
+  opacity: 0.9;
+}
+
+.otp-btn-confirm {
+  background: #2f80ed;
+  color: #ffffff;
+}
+
+.otp-btn-back {
+  background: #e2e8f0;
+  color: #2f80ed; /* Blue text on grey in light mode */
+}
+.otp-wrapper.dark .otp-btn-back {
+  background: #4b5563; /* Dark grey in dark mode */
+  color: #ffffff; /* White text in dark mode */
+}
+
+.otp-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 420px) {
+  .otp-card {
+    width: 94vw;
+    padding: 36px 20px 32px;
+  }
+}

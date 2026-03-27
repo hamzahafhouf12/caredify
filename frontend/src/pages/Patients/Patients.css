@@ -1,0 +1,127 @@
+/* ═══════════════════════════════════════════════════════════
+   Patients Page V2 Refinement CSS
+   ═══════════════════════════════════════════════════════════ */
+
+.v2-patients-page {
+  flex: 1;
+  padding: 1rem 0;
+}
+
+/* ── TOOLBAR */
+
+.v2-toolbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.v2-search-box {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+}
+
+.v2-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.v2-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border-radius: 20px;
+  border: 1px solid #e1e4e8;
+  background: #fcfcfc;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.v2-search-input:focus {
+  border-color: #2f80ed;
+}
+
+.cdash--dark .v2-search-input {
+  background: #0d1117;
+  border-color: #30363d;
+  color: #fff;
+}
+
+/* ── TABLE ── */
+.v2-patients-table-card {
+  padding: 0.5rem 0.25rem;
+  border-radius: 8px;
+}
+
+.v2-table {
+  border-top: 1px solid #eee; /* Faint line per mockup */
+}
+.cdash--dark .v2-table {
+  border-top-color: #21262d;
+}
+
+.v2-table thead th {
+  background: transparent;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #8c98a5;
+  text-transform: none;
+  letter-spacing: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.cdash--dark .v2-table thead th {
+  border-bottom-color: #21262d;
+}
+
+.v2-table tbody tr {
+  height: 60px;
+}
+
+.v2-table td {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f8f9fa;
+}
+.cdash--dark .v2-table td {
+  border-bottom-color: #161b22;
+}
+
+.v2-patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.v2-patient-avatar {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-radius: 50%;
+  font-size: 1rem;
+}
+.cdash--dark .v2-patient-avatar {
+  background: #30363d;
+}
+
+.v2-patient-name {
+  font-weight: 500;
+}
+
+/* Actions Links */
+.v2-link-blue {
+  color: #2f80ed;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.v2-link-blue:hover {
+  text-decoration: underline;
+}
