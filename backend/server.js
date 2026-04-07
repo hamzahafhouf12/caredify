@@ -24,16 +24,28 @@ app.get("/api", (req, res) => {
   res.json({ message: "Welcome to Caredify API!" });
 });
 
-// Database Connection
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("✅ Successfully connected to MongoDB");
-    // Start Server
-    app.listen(PORT, () => {
-      console.log(`🚀 Backend Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-  });
+// Database Connection Logic
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ Successfully connected to MongoDB Atlas");
+  } catch (err) {
+    console.error("❌ MongoDB Atlas connection error:", err.message);
+    console.log("🔄 Attempting local MongoDB fallback...");
+    
+    const LOCAL_MONGO = "mongodb://127.0.0.1:27017/caredify";
+    try {
+      await mongoose.connect(LOCAL_MONGO);
+      console.log("✅ Successfully connected to local MongoDB");
+    } catch (localErr) {
+      console.error("❌ Critical Error: All MongoDB connections failed.");
+    }
+  }
+};
+
+connectDB();
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`🚀 Backend Server running on port ${PORT}`);
+});
