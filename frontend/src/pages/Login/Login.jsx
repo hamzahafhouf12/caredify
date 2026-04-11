@@ -119,7 +119,13 @@ function Login() {
         </div>
 
         <span
-          onClick={() => navigate("/otp")}
+          onClick={() => {
+            if (!email) {
+              setError("Veuillez saisir votre email avant de cliquer sur 'Mot de passe oublié'.")
+              return
+            }
+            navigate("/otp", { state: { email } })
+          }}
           className="forgot-link login-page__forgot"
         >
           Mot de passe oublié ?

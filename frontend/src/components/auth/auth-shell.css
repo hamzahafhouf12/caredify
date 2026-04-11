@@ -49,6 +49,10 @@
   margin-bottom: auto;
 }
 
+.brand-logo-small {
+  filter: brightness(0);
+}
+
 .dark .brand-logo-small {
   filter: brightness(0) invert(1);
 }

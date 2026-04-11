@@ -14,6 +14,7 @@ import HistoriqueECG from "./pages/HistoriqueECG/HistoriqueECG"
 import Alertes from "./pages/Alertes/Alertes"
 import Messages from "./pages/Messages/Messages"
 import Profile from "./pages/Profile/Profile"
+import ResetPassword from "./pages/ResetPassword/ResetPassword"
 
 import PrivateRoute from "./components/auth/PrivateRoute"
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/login/:role" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/otp" element={<OTPVerify />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         
         {/* Protected Admin Routes */}
         <Route path="/admin" element={

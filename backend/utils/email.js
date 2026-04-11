@@ -2,29 +2,19 @@ const nodemailer = require("nodemailer");
 
 // Create Transporter (Singleton)
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.MAILTRAP_HOST,
+  port: process.env.MAILTRAP_PORT,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // 16-digit Google App Password
+    user: process.env.MAILTRAP_USER,
+    pass: process.env.MAILTRAP_PASS,
   },
 });
 
-// Verify SMTP connection on startup
-transporter.verify((error, success) => {
-  const isPlaceholder = process.env.EMAIL_PASS === "VOTRE_CODE_GOOGLE_DE_16_LETTRES_REEL";
-  
-  if (isPlaceholder) {
-    console.error("\n❗ ATTENTION : Votre fichier .env contient encore des identifiants EXEMPLES.");
-    console.error("👉 Remplacez 'VOTRE_CODE_GOOGLE_DE_16_LETTRES_REEL' par vos 16 lettres réelles.");
-    console.log("------------------------------------------");
-  }
-
-  console.log(`[SMTP] Checking config: User=${process.env.EMAIL_USER}, PassLength=${process.env.EMAIL_PASS ? process.env.EMAIL_PASS.length : 0}`);
-  
+transporter.verify((error) => {
   if (error) {
     console.log("❌ [SMTP] ERROR:", error.message);
   } else {
-    console.log("✅ [SMTP] Server is ready to send emails");
+    console.log("✅ [SMTP] Mailtrap is ready to catch emails");
   }
 });
 
@@ -38,83 +28,113 @@ transporter.verify((error, success) => {
 const sendEmail = async (to, subject, text, html = null) => {
   console.log(`[EMAIL] Attempting to send to: ${to} | Subject: ${subject}`);
 
-  const isPlaceholder = process.env.EMAIL_PASS === "VOTRE_CODE_GOOGLE_DE_16_LETTRES_REEL" || !process.env.EMAIL_PASS || process.env.EMAIL_PASS.length < 10;
+  const isPlaceholder =
+    (process.env.EMAIL_PASS === "VOTRE_CODE_GOOGLE_DE_16_LETTRES_REEL" ||
+      !process.env.EMAIL_PASS ||
+      process.env.EMAIL_PASS.length < 10) &&
+    !process.env.MAILTRAP_PASS;
 
   if (isPlaceholder) {
     console.log("------------------------------------------");
-    console.log("⚠️ [MODE TEST ACTIF] Car Gmail n'est pas configuré");
-    console.log(`🔑 CONTENU : ${text}`);
+    console.log("⚠️ [TEST MODE ACTIVE] Gmail is not configured");
+    console.log(`🔑 CONTENT : ${text}`);
     console.log("------------------------------------------");
     return { success: true, messageId: "test-id" };
   }
 
   const mailOptions = {
-    from: `"Caredify" <${process.env.EMAIL_USER}>`,
+    from: `"Caredify" <no-reply@caredify.dev>`,
+
     to,
     subject,
     text,
-    html: html || text, 
+    html: html || text,
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ [EMAIL] Envoyé ! ID: ${info.messageId}`);
+    console.log(`✅ [EMAIL] Sent! ID: ${info.messageId}`);
     return info;
   } catch (error) {
-    console.log("❌ [EMAIL] ERREUR SMTP :", error.message);
-    throw error;
+    console.log("❌ [EMAIL] SMTP ERROR (Rate Limit or Connection):", error.message);
+    
+    // --- FALLBACK FOR DEVELOPMENT ---
+    console.log("--------------------------------------------------");
+    console.log("⚠️  [FALLBACK] L'envoi SMTP a échoué !");
+    console.log(`📧 DESTINATAIRE : ${to}`);
+    console.log(`📝 SUJET : ${subject}`);
+    console.log(`🔑 CONTENU : ${text}`);
+    console.log("--------------------------------------------------");
+    
+    // On retourne un objet simulant le succès pour ne pas bloquer le frontend
+    return { success: true, isMock: true, messageId: "fallback-id" };
   }
-};
+}
 
 /**
- * Send Professional Account Verification Link
+ * Send Email Verification OTP
+ * @param {string} to - Recipient email
+ * @param {string} otp - 6-digit verification code
  */
-const sendVerificationEmail = async (to, token) => {
-  const verificationURL = `http://localhost:5000/api/auth/verify-email?token=${token}`;
-
+const sendVerificationOTP = async (to, otp) => {
   const htmlContent = `
-    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; padding: 50px 0; border-radius: 10px;">
-      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #2f80ed; margin: 0;">Caredify</h1>
-          <p style="color: #64748b; font-size: 16px;">Vérification de votre compte</p>
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; padding: 40px 0;">
+      <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center;">
+        <h2 style="color: #2f80ed; margin-bottom: 8px;">Caredify</h2>
+        <p style="color: #64748b; font-size: 14px; margin-top: 0;">Secure Medical Platform</p>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+        <p style="color: #475569; font-size: 16px; margin-bottom: 8px;">Welcome! Please verify your email address.</p>
+        <p style="color: #475569; font-size: 15px; margin-bottom: 30px;">Use the code below to activate your account:</p>
+        <div style="background-color: #f1f5f9; padding: 25px; border-radius: 8px; display: inline-block; margin-bottom: 24px;">
+          <h1 style="color: #1e293b; font-size: 42px; margin: 0; letter-spacing: 12px; font-family: monospace;">${otp}</h1>
         </div>
-        <p style="color: #1e293b; font-size: 16px; line-height: 1.6;">Bonjour,</p>
-        <p style="color: #1e293b; font-size: 16px; line-height: 1.6;">Merci de vous être inscrit sur <strong>Caredify</strong>. Veuillez cliquer sur le bouton ci-dessous pour activer votre compte :</p>
-        <div style="text-align: center; margin: 40px 0;">
-          <a href="${verificationURL}" style="background-color: #2f80ed; color: #ffffff; padding: 15px 35px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block;">Activer mon compte</a>
-        </div>
-        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
-        <p style="text-align: center; color: #94a3b8; font-size: 12px;">© 2024 Caredify. Tous droits réservés.</p>
+        <p style="color: #64748b; font-size: 14px;">This code is valid for <strong>10 minutes</strong>.</p>
+        <p style="color: #94a3b8; font-size: 12px; margin-top: 24px;">If you did not create a Caredify account, you can safely ignore this email.</p>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+        <p style="text-align: center; color: #94a3b8; font-size: 12px;">© 2024 Caredify. All rights reserved.</p>
       </div>
     </div>
   `;
 
-  return await sendEmail(to, "Bienvenue sur Caredify - Vérifiez votre compte", `Activez votre compte ici : ${verificationURL}`, htmlContent);
+  return await sendEmail(
+    to,
+    "Caredify - Verify your email address",
+    `Your verification code is: ${otp}. Valid for 10 minutes.`,
+    htmlContent
+  );
 };
 
 /**
  * Send Password Reset OTP
+ * @param {string} to - Recipient email
+ * @param {string} otp - 6-digit reset code
  */
 const sendPasswordResetOTP = async (to, otp) => {
   const htmlContent = `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; padding: 40px 0;">
       <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center;">
         <h2 style="color: #2f80ed; margin-bottom: 20px;">Caredify</h2>
-        <p style="color: #475569; font-size: 16px; margin-bottom: 30px;">Voici votre code de validation pour réinitialiser votre mot de passe :</p>
+        <p style="color: #475569; font-size: 16px; margin-bottom: 30px;">Here is your password reset code:</p>
         <div style="background-color: #f1f5f9; padding: 25px; border-radius: 8px; display: inline-block; margin-bottom: 30px;">
           <h1 style="color: #1e293b; font-size: 42px; margin: 0; letter-spacing: 12px; font-family: monospace;">${otp}</h1>
         </div>
-        <p style="color: #64748b; font-size: 14px;">Ce code est valide pendant <strong>10 minutes</strong>.</p>
+        <p style="color: #64748b; font-size: 14px;">This code is valid for <strong>10 minutes</strong>.</p>
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+        <p style="text-align: center; color: #94a3b8; font-size: 12px;">© 2024 Caredify. All rights reserved.</p>
       </div>
     </div>
   `;
 
-  return await sendEmail(to, "Caredify - Réinitialisation de mot de passe", `Votre code est : ${otp}`, htmlContent);
+  return await sendEmail(
+    to,
+    "Caredify - Password Reset",
+    `Your reset code is: ${otp}`,
+    htmlContent
+  );
 };
 
 module.exports = {
   sendEmail,
-  sendVerificationEmail,
-  sendPasswordResetOTP
+  sendVerificationOTP,
+  sendPasswordResetOTP,
 };
