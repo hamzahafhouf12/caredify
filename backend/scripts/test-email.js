@@ -1,45 +1,45 @@
-require("dotenv").config();
-const nodemailer = require("nodemailer");
+/**
+ * TEST EMAIL SCRIPT — CAREDIFY
+ * Usage : node scripts/test-email.js
+ */
 
-console.log("--- 📧 TEST ENVOI GMAIL ---");
-console.log("Email utilisé :", process.env.EMAIL_USER || "NON DÉFINI");
-console.log("Pass (longueur) :", process.env.EMAIL_PASS ? process.env.EMAIL_PASS.length : 0, "caractères");
+require('dotenv').config();
+const nodemailer = require('nodemailer');
 
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-  console.log("❌ Erreur : EMAIL_USER ou EMAIL_PASS manquants dans le fichier .env");
+console.log('--- 📧 TEST ENVOI EMAIL ---');
+console.log('Host     :', process.env.MAILTRAP_HOST || 'NON DÉFINI');
+console.log('Port     :', process.env.MAILTRAP_PORT || 'NON DÉFINI');
+console.log('User     :', process.env.MAILTRAP_USER ? '✅ défini' : '❌ NON DÉFINI');
+console.log('Password :', process.env.MAILTRAP_PASS ? '✅ défini' : '❌ NON DÉFINI');
+
+if (!process.env.MAILTRAP_USER || !process.env.MAILTRAP_PASS) {
+  console.log('\n❌ MAILTRAP_USER ou MAILTRAP_PASS manquants dans .env');
   process.exit(1);
 }
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
+  host: process.env.MAILTRAP_HOST,
+  port: parseInt(process.env.MAILTRAP_PORT),
+  auth: { user: process.env.MAILTRAP_USER, pass: process.env.MAILTRAP_PASS },
 });
 
 async function runTest() {
-  console.log("1. Vérification de la connexion SMTP...");
   try {
+    console.log('\n1. Vérification connexion SMTP...');
     await transporter.verify();
-    console.log("✅ Connexion réussie ! Vos identifiants sont corrects.");
+    console.log('✅ Connexion SMTP réussie !');
 
-    console.log("2. Envoi d'un e-mail de test...");
+    console.log('2. Envoi email de test...');
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // S'envoyer à soi-même
-      subject: "Test Caredify SMTP",
-      text: "Si vous lisez ceci, l'envoi d'e-mail fonctionne parfaitement !",
+      from:    '"Caredify Test" <no-reply@caredify.dev>',
+      to:      'test@example.com',
+      subject: 'CAREDIFY — Test SMTP',
+      text:    'Si vous lisez ceci, le service email fonctionne correctement.',
     });
-    console.log("🚀 E-mail envoyé avec succès ! Vérifiez votre boîte de réception.");
+    console.log('🚀 Email envoyé avec succès vers Mailtrap !');
+    console.log('   → Vérifiez votre inbox sur https://mailtrap.io');
   } catch (error) {
-    console.log("❌ ERREUR :");
-    console.log(error);
-    if (error.message.includes("535")) {
-      console.log("\n💡 CONSEIL : C'est une erreur d'authentification.");
-      console.log("- Vérifiez que vous utilisez un 'Mot de passe d'application' (16 lettres).");
-      console.log("- Ne mettez PAS votre mot de passe Gmail habituel.");
-    }
+    console.error('\n❌ ERREUR SMTP:', error.message);
   }
 }
 

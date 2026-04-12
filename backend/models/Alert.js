@@ -1,21 +1,34 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
+/**
+ * ALERT MODEL — CAREDIFY
+ *
+ * Utilisé par :
+ *  - Dashboard Cardiologue : ses propres alertes
+ *  - Dashboard Admin       : vue macro (stats globales)
+ */
 const alertSchema = new mongoose.Schema(
   {
     patient: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Patient",
+      ref: 'Patient',
       required: true,
     },
     medecin: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
+    // Clinique concernée (pour filtrage Dashboard Clinique)
+    clinicId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Clinic',
+      default: null,
+    },
     type: {
-      type: String, // 'Urgente', 'Modéré', 'Info'
+      type: String,
       required: true,
-      enum: ["Urgente", "Modéré", "Info"]
+      enum: ['Urgente', 'Modéré', 'Info'],
     },
     detail: {
       type: String,
@@ -24,10 +37,13 @@ const alertSchema = new mongoose.Schema(
     lue: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   { timestamps: true }
 );
 
-const Alert = mongoose.model("Alert", alertSchema);
-module.exports = Alert;
+alertSchema.index({ medecin: 1, lue: 1 });
+alertSchema.index({ clinicId: 1 });
+alertSchema.index({ patient: 1 });
+
+module.exports = mongoose.model('Alert', alertSchema);
