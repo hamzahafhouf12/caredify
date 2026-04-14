@@ -1,4 +1,4 @@
-import "./ThemeToggle.css"
+import "./ThemeToggle.css";
 
 function ThemeToggle({ darkMode, onToggle, className = "theme-toggle" }) {
   return (
@@ -11,7 +11,7 @@ function ThemeToggle({ darkMode, onToggle, className = "theme-toggle" }) {
     >
       {darkMode ? "☀️" : "🌙"}
     </button>
-  )
+  );
 }
 
-export default ThemeToggle
+export default ThemeToggle;

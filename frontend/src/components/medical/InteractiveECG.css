@@ -1,0 +1,224 @@
+.interactive-ecg-container {
+  width: 100%;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.ecg-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 300px; /* Doit matcher la prop height */
+  background-color: #fffafa; /* Fond très légèrement rosé */
+  user-select: none;
+}
+
+.ecg-canvas-wrapper canvas {
+  display: block;
+}
+
+/* Contrôles flottants */
+.ecg-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 5px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  align-items: center;
+}
+
+.ecg-controls button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ccc;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.ecg-controls button:hover {
+  background: #f0f0f0;
+  border-color: #2f80ed;
+  color: #2f80ed;
+}
+
+.ecg-control-divider {
+  width: 1px;
+  height: 15px;
+  background: #eee;
+  margin: 0 4px;
+}
+
+.ecg-btn-snapshot {
+  color: #555;
+  font-size: 14px;
+}
+
+.ecg-btn-snapshot:hover {
+  color: #e67e22 !important;
+}
+
+/* Bar d'info basse */
+.ecg-info-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 15px;
+  background: #f8f9fa;
+  border-top: 1px solid #eee;
+  font-size: 11px;
+  color: #777;
+  font-family: "Inter", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Overlays pour adoucir les bords */
+.ecg-edge-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.ecg-edge-overlay.left {
+  left: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.ecg-edge-overlay.right {
+  right: 0;
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
+}
+
+/* Badge Live */
+.ecg-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff0f0;
+  color: #e74c3c;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  border: 1px solid #fab1a0;
+  margin-right: 5px;
+}
+
+.ecg-live-badge .dot {
+  width: 6px;
+  height: 6px;
+  background-color: #e74c3c;
+  border-radius: 50%;
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 5px rgba(231, 76, 60, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
+  }
+}
+
+/* Mode Toggle */
+.ecg-mode-toggle {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 4px;
+  padding: 2px;
+  border: 1px solid #cbd5e1;
+}
+
+.ecg-mode-toggle button {
+  width: auto !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 8px !important;
+  font-size: 11px;
+  color: #64748b !important;
+  border-radius: 3px !important;
+}
+
+.ecg-mode-toggle button.active {
+  background: white !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+/* Annotation Prompt */
+.ecg-annotation-prompt {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  border: 1px solid #e2e8f0;
+  width: 250px;
+}
+
+.ecg-annotation-prompt h4 {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.ecg-annotation-prompt input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.prompt-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.prompt-actions button {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+}
+
+.prompt-actions .btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.prompt-actions .btn-save {
+  background: #2563eb;
+  color: white;
+}

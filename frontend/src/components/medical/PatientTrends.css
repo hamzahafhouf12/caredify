@@ -1,0 +1,234 @@
+/* ═══════════════════════════════════════════════════
+   PATIENT TRENDS & HISTORY — Styles
+   ═══════════════════════════════════════════════════ */
+
+.patient-trends {
+  padding: 1.5rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  margin-top: 1rem;
+}
+
+.cdash--dark .patient-trends {
+  background: #1a2233;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.trends-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #f0f4f8;
+  padding-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.cdash--dark .trends-header {
+  border-bottom-color: #2d3748;
+}
+
+.trends-header h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.25rem;
+}
+
+.cdash--dark .trends-header h3 {
+  color: #f1f5f9;
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  display: block;
+}
+
+.trends-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.trend-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.cdash--dark .trend-card {
+  background: #232d42;
+  border-color: #334155;
+}
+
+.trend-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+}
+
+.trend-card .card-header {
+  margin-bottom: 1.5rem;
+}
+
+.trend-card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0 0 0.2rem;
+}
+
+.cdash--dark .trend-card h4 {
+  color: #e2e8f0;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+/* Custom Tooltip Styling */
+.custom-tooltip {
+  background: white;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.cdash--dark .custom-tooltip {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.custom-tooltip .label {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #1a202c;
+}
+
+.cdash--dark .custom-tooltip .label {
+  color: #e2e8f0;
+}
+
+.custom-tooltip p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Empty State */
+.trends-empty {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 16px;
+  border: 2px dashed #e2e8f0;
+}
+
+.cdash--dark .trends-empty {
+  background: #232d42;
+  border-color: #334155;
+}
+
+.trends-empty-content span {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.trends-title-group h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.5rem 0;
+}
+.cdash--dark .trends-title-group h3 {
+  color: #f1f5f9;
+}
+
+.trends-title-group p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.trends-period-selector {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.period-btn {
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.period-btn:hover {
+  background: white;
+  color: #334155;
+}
+
+.period-btn.active {
+  background: white;
+  color: var(--brand-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cdash--dark .trends-period-selector {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: #334155;
+}
+.cdash--dark .period-btn {
+  color: #94a3b8;
+}
+.cdash--dark .period-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.cdash--dark .period-btn.active {
+  background: #2563eb;
+  color: white;
+}
+
+.trends-empty-content p {
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .trends-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Chart Axis colors for dark mode */
+.cdash--dark .recharts-cartesian-grid-horizontal line,
+.cdash--dark .recharts-cartesian-grid-vertical line {
+  stroke: #334155;
+}
+
+.cdash--dark .recharts-text {
+  fill: #94a3b8;
+}
+
+.cdash--dark .recharts-legend-item-text {
+  color: #cbd5e1 !important;
+}

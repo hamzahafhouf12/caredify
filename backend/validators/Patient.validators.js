@@ -28,6 +28,16 @@ const updatePatientSchema = Joi.object({
   age: Joi.number().integer().min(0).max(150).optional(),
   adresse: Joi.string().max(255).optional().allow(""),
   etat: Joi.string().valid("Stable", "Modéré", "Critique").optional(),
+  groupeSanguin: Joi.string().valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-").optional().allow(null, ""),
+  antecedents: Joi.array().items(Joi.string()).optional(),
+  traitementsEnCours: Joi.array().items(Joi.string()).optional(),
+  observations: Joi.array().items(
+    Joi.object({
+      texte: Joi.string().required(),
+      date: Joi.date().optional(),
+      medecinId: Joi.string().optional()
+    })
+  ).optional()
 });
 
 module.exports = { createPatientSchema, updatePatientSchema };

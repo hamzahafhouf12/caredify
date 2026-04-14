@@ -1,49 +1,197 @@
 const express = require("express");
 const Patient = require("../models/Patient");
 const Alert = require("../models/Alert");
+const Message = require("../models/Message");
+const Vitals = require("../models/Vitals");
+const ECGRecord = require("../models/Ecgrecord");
 const { protect, doctor } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 /**
  * @route GET /api/dashboard/stats
- * @desc Gets all necessary stats for the Cardiologue Dashboard
+ * @desc  Returns all stats needed for the Cardiologue Dashboard
  */
-router.get("/stats", protect, doctor, async (req, res) => {
+router.get("/stats", protect, doctor, async (req, res, next) => {
   try {
     const medecinId = req.user._id;
 
-    // Only count patients and alerts assigned to the logged in doctor
-    const totalPatients = await Patient.countDocuments({ medecin: medecinId });
-    const urgentesCount = await Alert.countDocuments({ medecin: medecinId, type: "Urgente", lue: false });
-    
-    // Fetch top 5 urgent alerts
-    const urgentesList = await Alert.find({ medecin: medecinId, type: "Urgente" })
-      .populate("patient", "nom prenom")
-      .sort({ createdAt: -1 })
-      .limit(5);
+    const [
+      totalPatients,
+      urgentesCount,
+      patientsRisqueEleve,
+      urgentesList,
+      moderesList,
+      infoList,
+      recentPatients,
+      unreadMessagesCount,
+      recentMessages,
+      vitalsAvg,
+      dernierECG,
+      vitalsTrends,
+    ] = await Promise.all([
+      // Total patients
+      Patient.countDocuments({ medecin: medecinId }),
 
-    // Fetch top 5 moderate alerts
-    const moderesList = await Alert.find({ medecin: medecinId, type: "Modéré" })
-      .populate("patient", "nom prenom")
-      .sort({ createdAt: -1 })
-      .limit(5);
+      // Unread urgent alerts count
+      Alert.countDocuments({ medecin: medecinId, type: "Urgente", lue: false }),
 
-    // Top 4 recent patients
-    const recentPatients = await Patient.find({ medecin: medecinId })
-      .sort({ createdAt: -1 })
-      .limit(4);
+      // High risk patients (IA)
+      Patient.find({ medecin: medecinId, niveauRisque: "Élevé" })
+        .select("nom prenom age etat niveauRisque derniereAnalyseIA")
+        .sort({ derniereAnalyseIA: -1 })
+        .limit(5),
+
+      // Top 5 urgent alerts
+      Alert.find({ medecin: medecinId, type: "Urgente" })
+        .populate("patient", "nom prenom")
+        .sort({ createdAt: -1 })
+        .limit(5),
+
+      // Top 5 moderate alerts
+      Alert.find({ medecin: medecinId, type: "Modéré" })
+        .populate("patient", "nom prenom")
+        .sort({ createdAt: -1 })
+        .limit(5),
+
+      // Top 5 info alerts
+      Alert.find({ medecin: medecinId, type: "Info" })
+        .populate("patient", "nom prenom")
+        .sort({ createdAt: -1 })
+        .limit(5),
+
+      // 4 most recent patients
+      Patient.find({ medecin: medecinId })
+        .sort({ createdAt: -1 })
+        .limit(4),
+
+      // Unread messages count
+      Message.countDocuments({ destinataire: medecinId, lue: false }),
+
+      // Last 3 messages
+      Message.find({ destinataire: medecinId })
+        .populate("expediteur", "nom prenom role")
+        .populate("patient", "nom prenom")
+        .sort({ createdAt: -1 })
+        .limit(3),
+
+      // Average vitals last 30 days
+      Vitals.aggregate([
+        {
+          $match: {
+            medecin: medecinId,
+            createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            avgFrequenceCardiaque: { $avg: "$frequenceCardiaque" },
+            avgHrv:  { $avg: "$hrv" },
+            avgSpo2: { $avg: "$spo2" },
+          },
+        },
+      ]),
+
+      // Last ECG received for this doctor's patients
+      ECGRecord.findOne({ medecin: medecinId })
+        .populate("patient", "nom prenom")
+        .sort({ createdAt: -1 })
+        .select("patient createdAt iaInterpretations.scoreRisque iaInterpretations.resumeIA revue"),
+
+      // Trends (Daily averages last 7 days)
+      Vitals.aggregate([
+        {
+          $match: {
+            medecin: medecinId,
+            createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            avgFrequenceCardiaque: { $avg: "$frequenceCardiaque" },
+            avgHrv:  { $avg: "$hrv" },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
+    ]);
+
+    const vitals = vitalsAvg[0]
+      ? {
+          avgFrequenceCardiaque: Math.round(vitalsAvg[0].avgFrequenceCardiaque) || null,
+          avgHrv:  Math.round(vitalsAvg[0].avgHrv)  || null,
+          avgSpo2: Math.round(vitalsAvg[0].avgSpo2) || null,
+          trends: vitalsTrends.map(t => ({
+            date: t._id,
+            hr: Math.round(t.avgFrequenceCardiaque),
+            hrv: Math.round(t.avgHrv)
+          }))
+        }
+      : { avgFrequenceCardiaque: null, avgHrv: null, avgSpo2: null, trends: [] };
 
     res.json({
       totalPatients,
       urgentesCount,
-      urgentesList,
-      moderesList,
-      recentPatients
+      unreadMessagesCount,
+      patientsRisqueEleve,
+      dernierECG,
+      alerts: {
+        urgentes: urgentesList,
+        moderes:  moderesList,
+        info:     infoList,
+      },
+      recentPatients,
+      recentMessages,
+      vitals,
     });
   } catch (error) {
-    console.error("Dashboard Stats Error:", error);
-    res.status(500).json({ message: "Erreur serveur lors de la récupération des statistiques" });
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/dashboard/patients-risque
+ * @desc  Get all high-risk patients for this doctor
+ */
+router.get("/patients-risque", protect, doctor, async (req, res, next) => {
+  try {
+    const { niveau = "Élevé" } = req.query;
+
+    const patients = await Patient.find({
+      medecin: req.user._id,
+      niveauRisque: niveau,
+    })
+      .sort({ derniereAnalyseIA: -1 });
+
+    res.json({ total: patients.length, patients });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * @route GET /api/dashboard/alerts-summary
+ * @desc  Get alert counts by type and status
+ */
+router.get("/alerts-summary", protect, doctor, async (req, res, next) => {
+  try {
+    const medecinId = req.user._id;
+
+    const summary = await Alert.aggregate([
+      { $match: { medecin: medecinId } },
+      {
+        $group: {
+          _id: { type: "$type", statut: "$statut" },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.json(summary);
+  } catch (error) {
+    next(error);
   }
 });
 

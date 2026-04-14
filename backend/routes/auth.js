@@ -73,12 +73,12 @@ router.post("/login", validate(loginSchema), async (req, res, next) => {
       return next(err);
     }
 
-    // [DEBUG] Block login if email not verified - Temporarily disabled to unblock user
-    // if (!user.isVerified) {
-    //   const err = new Error("Please verify your email address before logging in.");
-    //   err.statusCode = 403;
-    //   return next(err);
-    // }
+    // Block login if email not verified
+    if (!user.isVerified) {
+      const err = new Error("Veuillez vérifier votre adresse e-mail avant de vous connecter.");
+      err.statusCode = 403;
+      return next(err);
+    }
 
     res.json({
       _id: user._id,
@@ -260,25 +260,5 @@ router.post("/reset-password", validate(resetPasswordSchema), async (req, res, n
   }
 });
 
-/**
- * @route GET /api/auth/temp-verify/:email
- * @desc  TEMP ROUTE - Manually verify a user for development purposes
- */
-router.get("/temp-verify/:email", async (req, res, next) => {
-  try {
-    const { email } = req.params;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
-    
-    user.isVerified = true;
-    user.emailVerificationToken = undefined;
-    user.emailVerificationExpires = undefined;
-    await user.save();
-    
-    res.json({ message: `User ${email} verified successfully!` });
-  } catch (error) {
-    next(error);
-  }
-});
 
 module.exports = router;

@@ -1,4 +1,4 @@
-import ThemeToggle from "../ThemeToggle"
+import ThemeToggle from "../ThemeToggle";
 
 function Topbar({ breadcrumb, darkMode, onToggleTheme }) {
   return (
@@ -11,18 +11,24 @@ function Topbar({ breadcrumb, darkMode, onToggleTheme }) {
       <div className="cdash-topbar__right">
         <div className="cdash-topbar__search">
           <span className="cdash-topbar__search-icon">🔍</span>
-          <input type="text" placeholder="Recherche" className="cdash-topbar__search-input" />
+          <input
+            type="text"
+            placeholder="Recherche"
+            className="cdash-topbar__search-input"
+          />
         </div>
         <span className="cdash-topbar__lang">Fr</span>
-        <button className="cdash-topbar__icon-btn" title="Notifications">🔔</button>
-        <ThemeToggle 
-          darkMode={darkMode} 
-          onToggle={onToggleTheme} 
+        <button className="cdash-topbar__icon-btn" title="Notifications">
+          🔔
+        </button>
+        <ThemeToggle
+          darkMode={darkMode}
+          onToggle={onToggleTheme}
           className="cdash-topbar__icon-btn cdash-topbar__theme-btn"
         />
       </div>
     </header>
-  )
+  );
 }
 
-export default Topbar
+export default Topbar;

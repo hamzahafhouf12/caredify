@@ -1,104 +1,204 @@
-import MedicalLayout from "../../components/layout/MedicalLayout"
-import { doctorInfo, navItems } from "../../constants/medical"
-import { Link } from "react-router-dom"
-import "./SignauxVitaux.css"
+import React, { useState, useEffect } from "react";
+import MedicalLayout from "../../components/layout/MedicalLayout";
+import { doctorInfo, navItems } from "../../constants/medical";
+import { Link } from "react-router-dom";
+import "./SignauxVitaux.css";
 
-/* ─── Données mock ────────────────────────────────────────── */
+/* ─── Composant mini-ECG Graphique Dynamique ────────────────────────── */
 
-const themedNavItems = navItems.map(item => ({
-  ...item,
-  active: item.label === "Signaux Vitaux"
-}))
+function MiniECGGraph({ data, color = "#2f80ed" }) {
+  if (!data || data.length === 0) {
+    return (
+      <svg
+        viewBox="0 0 100 30"
+        width="80"
+        height="24"
+        className="signaux-mini-ecg"
+      >
+        <polyline
+          fill="none"
+          stroke="#ccc"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          points="0,15 100,15"
+        />
+      </svg>
+    );
+  }
 
-const ecgData = [
-  { date: "11/05/2025 08:00", patient: "Natali Craig", analyse: "Tachycardie détectée", avatar: "👤" },
-  { date: "12/05/2025 10:58", patient: "Kate Morrison", analyse: "Rythme sinusal normal", avatar: "👤" },
-  { date: "11/05/2025 09:00", patient: "Drew Cano", analyse: "Tachycardie détectée", avatar: "👤" },
-  { date: "11/05/2025 20:30", patient: "Orlando Diggs", analyse: "Rythme sinusal normal", avatar: "👤" },
-  { date: "14/05/2025 17:00", patient: "Andi Lane", analyse: "Arythmie suspectée", avatar: "👤" },
-  { date: "11/05/2025 08:25", patient: "Natali Craig", analyse: "SpO₂ instable détectée", avatar: "👤" },
-  { date: "11/05/2025 20:00", patient: "Kate Morrison", analyse: "Bradycardie", avatar: "👤" },
-  { date: "15/05/2025 15:44", patient: "Drew Cano", analyse: "Normal", avatar: "👤" },
-  { date: "11/05/2025 08:17", patient: "Orlando Diggs", analyse: "Extrasystole", avatar: "👤" },
-  { date: "16/05/2025 11:00", patient: "Andi Lane", analyse: "SpO₂ instable détectée", avatar: "👤" },
-]
+  const step = Math.max(1, Math.floor(data.length / 100));
+  const sampled = data.filter((_, i) => i % step === 0).slice(0, 100);
+  const min = Math.min(...sampled);
+  const max = Math.max(...sampled);
+  const range = max - min || 1;
+  const pts = sampled
+    .map((v, i) => `${i},${30 - ((v - min) / range) * 25}`)
+    .join(" ");
 
-function MiniECG() {
   return (
-    <svg viewBox="0 0 100 30" width="80" height="24" className="signaux-mini-ecg">
+    <svg
+      viewBox={`0 0 ${sampled.length} 30`}
+      width="80"
+      height="24"
+      className="signaux-mini-ecg"
+    >
       <polyline
-        fill="none" stroke="#2f80ed" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
-        points="0,15 10,15 15,10 20,15 25,15 30,5 35,25 40,15 50,15 60,15 65,10 70,15 75,15 80,2 85,28 90,15 100,15"
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={pts}
       />
     </svg>
-  )
+  );
 }
 
+/* ─── Composant Principal ────────────────────────────────────────── */
+
 function SignauxVitaux() {
+  const [ecgs, setEcgs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
+  const fetchEcgs = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("caredify_token");
+      const res = await fetch(`${API_URL}/ecg/all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setEcgs(data);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la récupération des ECGs:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEcgs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const themedNavItems = navItems.map((item) => ({
+    ...item,
+    active: item.label === "Signaux Vitaux",
+  }));
+
   return (
-    <MedicalLayout 
-      breadcrumb="Signaux Vitaux" 
-      navItems={themedNavItems} 
+    <MedicalLayout
+      breadcrumb="Signaux Vitaux"
+      navItems={themedNavItems}
       doctorInfo={doctorInfo}
     >
-      <div className="cdash-center">
+      <div className="cdash-center signaux-page">
         <h1 className="cdash-page-title">Liste des ECG</h1>
 
         {/* Action Bar */}
-        <div className="cdash-list-toolbar-wrapper">
-          <div className="cdash-list-toolbar">
-            <button className="cdash-list-btn-icon">＋</button>
-            <button className="cdash-list-btn-icon">⇅</button>
-          </div>
+        <div className="signaux-toolbar">
+          <button className="patients-btn-icon">＋</button>
+          <button className="patients-btn-icon">⇅</button>
         </div>
 
-        {/* ECG Table */}
-        <div className="cdash-card signaux-table-card">
-          <div className="cdash-table-wrap">
-            <table className="cdash-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Patient</th>
-                  <th>Analyse</th>
-                  <th>Dernier ECG</th>
-                  <th>Voir Historique ECG</th>
-                  <th>Voir Fiche patient</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ecgData.map((item, idx) => (
-                  <tr key={idx}>
-                    <td className="signaux-td-date">{item.date}</td>
-                    <td>
-                      <div className="patient-name-cell">
-                        <span className="patient-avatar-mini">{item.avatar}</span>
-                        <strong>{item.patient}</strong>
-                      </div>
-                    </td>
-                    <td className="signaux-td-analyse">{item.analyse}</td>
-                    <td>
-                      <div className="signaux-ecg-stack">
-                        <MiniECG />
-                        <MiniECG />
-                        <MiniECG />
-                      </div>
-                    </td>
-                    <td>
-                      <Link to="/cardiologue/signaux-vitaux/historique" className="cdash-link-action cdash-link-action--sm">Historique ECG</Link>
-                    </td>
-                    <td>
-                      <Link to="/cardiologue/patients/fiche patient" className="cdash-link-action cdash-link-action--sm">Voir fiche</Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* Content Area */}
+        {loading ? (
+          <div className="signaux-empty">
+            <div className="cdash-spinner" style={{ margin: "0 auto 20px" }}></div>
+            <h3>Chargement en cours</h3>
+            <p>Récupération des signaux vitaux...</p>
           </div>
-        </div>
+        ) : ecgs.length === 0 ? (
+          <div className="signaux-empty">
+            <div className="signaux-empty-icon">📊</div>
+            <h3>Aucun tracé</h3>
+            <p>Aucun ECG n'est enregistré pour le moment.</p>
+          </div>
+        ) : (
+          <div className="cdash-card signaux-table-card">
+            <div className="cdash-table-wrap">
+              <table className="cdash-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Analyse</th>
+                    <th>Dernier ECG</th>
+                    <th>Voir Historique ECG</th>
+                    <th>Voir Fiche patient</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ecgs.map((ecg) => (
+                    <tr key={ecg._id}>
+                      <td className="signaux-td-date">
+                        {new Date(ecg.createdAt).toLocaleString("fr-FR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                      <td>
+                        <div className="patient-name-cell">
+                          <span className="patient-avatar-mini">👤</span>
+                          <strong>
+                            {ecg.patient?.nom} {ecg.patient?.prenom}
+                          </strong>
+                        </div>
+                      </td>
+                      <td className="signaux-td-analyse">
+                        {ecg.iaInterpretations?.resumeIA ||
+                          ecg.iaInterpretations?.resumeAlerte ||
+                          "Analyse en cours / Non spécifié"}
+                      </td>
+                      <td>
+                        <div className="signaux-ecg-stack">
+                          <MiniECGGraph
+                            data={ecg.signalData}
+                            color={
+                              (ecg.iaInterpretations?.scoreRisque || 0) >= 70
+                                ? "#ef4444"
+                                : (ecg.iaInterpretations?.scoreRisque || 0) >= 40
+                                ? "#f59e0b"
+                                : "#10b981"
+                            }
+                          />
+                        </div>
+                      </td>
+                      <td>
+                        <Link
+                          to={`/cardiologue/signaux-vitaux/historique?patientId=${ecg.patient?._id}`}
+                          className="cdash-link-action cdash-link-action--sm"
+                        >
+                          Historique ECG
+                        </Link>
+                      </td>
+                      <td>
+                        <Link
+                          to={`/cardiologue/patients/${ecg.patient?._id}`}
+                          className="cdash-link-action cdash-link-action--sm"
+                        >
+                          Voir fiche
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </MedicalLayout>
-  )
+  );
 }
 
-export default SignauxVitaux
+export default SignauxVitaux;

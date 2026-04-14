@@ -1,0 +1,299 @@
+/* ═══════════════════════════════════════════════════════════
+   ECG INBOX — Premium Styles
+   ═══════════════════════════════════════════════════════════ */
+
+.ecg-inbox-page {
+  padding: 0;
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Header ── */
+.inbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.inbox-stats {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.inbox-stat-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid;
+  transition: all var(--transition);
+}
+
+/* ── List ── */
+.inbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* ── Card ── */
+.inbox-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition);
+  animation: slideIn 0.3s ease-out;
+}
+.inbox-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.cdash--dark .inbox-card {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Card Top ── */
+.inbox-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+.cdash--dark .inbox-card-top {
+  border-color: var(--dark-border);
+}
+
+.inbox-card-patient {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inbox-avatar {
+  background: var(--brand-light);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  border: 2px solid white;
+  box-shadow: var(--shadow-xs);
+  flex-shrink: 0;
+}
+.cdash--dark .inbox-avatar {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: var(--dark-border);
+}
+
+.inbox-patient-info h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.cdash--dark .inbox-patient-info h3 {
+  color: var(--dark-text-primary);
+}
+
+.inbox-patient-info p {
+  margin: 3px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.inbox-card-meta {
+  text-align: right;
+}
+
+.inbox-risk-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.75rem;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Card Middle ── */
+.inbox-card-middle {
+  padding: 1.25rem 1.5rem;
+  background: var(--bg-page);
+}
+.cdash--dark .inbox-card-middle {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.inbox-ai-summary {
+  background: var(--bg-card);
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--brand-primary);
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-xs);
+}
+.cdash--dark .inbox-ai-summary {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+.inbox-ai-summary h4 {
+  margin: 0 0 7px;
+  font-size: 0.75rem;
+  color: var(--brand-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 700;
+}
+.inbox-ai-summary p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+.cdash--dark .inbox-ai-summary p {
+  color: var(--dark-text-secondary);
+}
+
+.inbox-graph-wrap {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  box-shadow: var(--shadow-xs);
+}
+.cdash--dark .inbox-graph-wrap {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+/* ── Card Bottom ── */
+.inbox-card-bottom {
+  padding: 1rem 1.5rem;
+  background: var(--bg-card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+}
+.cdash--dark .inbox-card-bottom {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+.inbox-actions-left button {
+  background: var(--bg-page);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.inbox-actions-left button:hover {
+  background: var(--border-color);
+}
+.cdash--dark .inbox-actions-left button {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--dark-border);
+  color: var(--dark-text-secondary);
+}
+
+.inbox-actions-right {
+  display: flex;
+  gap: 8px;
+}
+
+.inbox-btn {
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.inbox-btn:hover {
+  transform: translateY(-1px);
+}
+
+.inbox-btn-confirm {
+  background: linear-gradient(135deg, var(--color-success), #059669);
+  color: white;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+}
+.inbox-btn-confirm:hover {
+  box-shadow: 0 5px 16px rgba(16, 185, 129, 0.4);
+}
+
+.inbox-btn-reject {
+  background: linear-gradient(135deg, var(--color-danger), #dc2626);
+  color: white;
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
+}
+.inbox-btn-reject:hover {
+  box-shadow: 0 5px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* ── Empty State ── */
+.inbox-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border-color);
+  box-shadow: var(--shadow-xs);
+}
+.cdash--dark .inbox-empty {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+.inbox-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.inbox-empty h3 {
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1.1rem;
+}
+.cdash--dark .inbox-empty h3 {
+  color: var(--dark-text-primary);
+}
+.inbox-empty p {
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}

@@ -1,49 +1,50 @@
-import { useState, useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import AuthLayout from "../../components/auth/AuthLayout"
-import { ROLE_LABELS, getDashboardPathForRole } from "../../constants/roles"
-import "./Login.css"
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import AuthLayout from "../../components/auth/AuthLayout";
+import { ROLE_LABELS, getDashboardPathForRole } from "../../constants/roles";
+import "./Login.css";
 
 function Login() {
-  const { role } = useParams()
-  const roleLabel = role ? ROLE_LABELS[role] : null
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
+  const { role } = useParams();
+  const roleLabel = role ? ROLE_LABELS[role] : null;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (role && !getDashboardPathForRole(role)) {
-      navigate("/", { replace: true })
+      navigate("/", { replace: true });
     }
-  }, [role, navigate])
+  }, [role, navigate]);
 
-  const [error, setError] = useState("")
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-      })
+      });
 
-      const text = await response.text()
-      let data = {}
+      const text = await response.text();
+      let data = {};
 
       try {
-        data = text ? JSON.parse(text) : {}
+        data = text ? JSON.parse(text) : {};
       } catch (parseError) {
-        console.error("Non-JSON response from backend:", text)
-        throw new Error("Erreur serveur irrécupérable (Format invalide)")
+        console.error("Non-JSON response from backend:", text);
+        throw new Error("Erreur serveur irrécupérable (Format invalide)");
       }
 
-      console.log("Login Backend response:", { status: response.status, data })
+      console.log("Login Backend response:", { status: response.status, data });
 
       if (!response.ok) {
         let errorMsg = "Email ou mot de passe incorrect";
@@ -51,25 +52,25 @@ function Login() {
         else if (data.error) errorMsg = data.error;
         else if (Object.keys(data).length > 0) errorMsg = JSON.stringify(data);
         else errorMsg = `Code d'erreur HTTP: ${response.status} (réponse vide)`;
-        
-        setError(errorMsg)
-        return // Do NOT navigate away on error
+
+        setError(errorMsg);
+        return; // Do NOT navigate away on error
       }
 
       // Save token and user info to localStorage
-      localStorage.setItem("caredify_token", data.token)
-      localStorage.setItem("caredify_user", JSON.stringify(data))
+      localStorage.setItem("caredify_token", data.token);
+      localStorage.setItem("caredify_user", JSON.stringify(data));
 
       // Redirect to correct dashboard based on role (or URL param if forced)
-      const userRole = role || data.role
-      const dashboard = getDashboardPathForRole(userRole)
-      navigate(dashboard ?? "/")
+      const userRole = role || data.role;
+      const dashboard = getDashboardPathForRole(userRole);
+      navigate(dashboard ?? "/");
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <AuthLayout>
@@ -87,7 +88,7 @@ function Login() {
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") navigate("/")
+              if (e.key === "Enter" || e.key === " ") navigate("/");
             }}
           >
             Changer de rôle
@@ -121,10 +122,12 @@ function Login() {
         <span
           onClick={() => {
             if (!email) {
-              setError("Veuillez saisir votre email avant de cliquer sur 'Mot de passe oublié'.")
-              return
+              setError(
+                "Veuillez saisir votre email avant de cliquer sur 'Mot de passe oublié'.",
+              );
+              return;
             }
-            navigate("/otp", { state: { email } })
+            navigate("/otp", { state: { email } });
           }}
           className="forgot-link login-page__forgot"
         >
@@ -141,16 +144,13 @@ function Login() {
 
         <p className="auth-form__footer">
           Pas encore de compte ?{" "}
-          <span
-            onClick={() => navigate("/register")}
-            className="forgot-link"
-          >
+          <span onClick={() => navigate("/register")} className="forgot-link">
             S&apos;inscrire
           </span>
         </p>
       </form>
     </AuthLayout>
-  )
+  );
 }
 
-export default Login
+export default Login;

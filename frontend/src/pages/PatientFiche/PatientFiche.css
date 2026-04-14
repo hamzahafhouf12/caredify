@@ -1,128 +1,330 @@
 /* ═══════════════════════════════════════════════════════════
-   Patient Fiche Page CSS
+   Patient Fiche Page CSS — Premium Medical Record View
    ═══════════════════════════════════════════════════════════ */
 
 .fiche-container {
   flex: 1;
   max-width: 100%;
+  min-width: 0;
 }
 
 /* ── HEADER BAR ── */
 .fiche-header-bar {
-  background: #2f80ed;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, #1d4ed8 100%);
   color: #fff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 6px;
+  padding: 1rem 1.75rem;
+  border-radius: var(--radius-lg);
   margin-bottom: 1.5rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-brand);
 }
 .fiche-header-title {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.fiche-header-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.8;
   margin: 0;
 }
 
 /* ── INFO CARD ── */
 .fiche-info-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   display: flex;
-  align-items: center;
-  padding: 1.5rem 2.5rem;
-  gap: 2rem;
+  align-items: stretch;
+  gap: 0;
   margin-bottom: 1.5rem;
+  overflow: hidden;
 }
-.fiche-info-card__left,
-.fiche-info-card__right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
+.cdash--dark .fiche-info-card {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
 }
 
+.fiche-info-card__left,
+.fiche-info-card__middle,
+.fiche-info-card__right {
+  flex: 1;
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.fiche-info-card__middle {
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+.cdash--dark .fiche-info-card__middle {
+  border-color: var(--dark-border);
+}
+
+/* ── Patient Avatar ── */
 .fiche-patient-avatar {
-  width: 90px;
-  height: 90px;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
   border-radius: 50%;
-  background: #eef4fb;
+  background: linear-gradient(135deg, var(--brand-light) 0%, #bfdbfe 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
-  border: 4px solid #fff;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  font-size: 2.5rem;
+  border: 3px solid white;
+  box-shadow: var(--shadow-lg);
 }
 .cdash--dark .fiche-patient-avatar {
-  background: #1c2a3f;
-  border-color: #21262d;
+  background: linear-gradient(135deg, #1e3a5f, #162c4a);
+  border-color: var(--dark-border);
 }
 
+/* ── Info Grid ── */
 .fiche-info-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 .fiche-info-item {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
+  align-items: baseline;
 }
 .fiche-info-label {
   font-weight: 700;
-  font-size: 0.85rem;
-  min-width: 120px;
+  font-size: 0.78rem;
+  min-width: 100px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
 }
 .fiche-info-value {
-  font-size: 0.85rem;
-  color: #5a6b7d;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 .cdash--dark .fiche-info-value {
-  color: #a8bdd4;
+  color: var(--dark-text-primary);
 }
 
-.fiche-info-divider {
-  width: 1px;
-  height: 80px;
-  background: #e6edf5;
+/* ── Medical Badges ── */
+.medical-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
 }
-.cdash--dark .fiche-info-divider {
-  background: #21262d;
+.medical-badge {
+  padding: 3px 9px;
+  border-radius: var(--radius-full);
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.ant-badge {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid #fecaca;
+}
+.trait-badge {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  border: 1px solid #bfdbfe;
+}
+.cdash--dark .ant-badge {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.25);
+}
+.cdash--dark .trait-badge {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border-color: rgba(59, 130, 246, 0.25);
 }
 
-/* ── SECTIONS ── */
+/* ── Edit Medical Button ── */
+.btn-edit-medical {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.btn-edit-medical:hover {
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+.cdash--dark .btn-edit-medical {
+  border-color: var(--dark-border);
+  color: var(--dark-text-muted);
+}
+.cdash--dark .btn-edit-medical:hover {
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--brand-muted);
+  border-color: var(--brand-primary);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABS
+   ═══════════════════════════════════════════════════════════ */
+.fiche-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  box-shadow: var(--shadow-xs);
+  width: fit-content;
+}
+.cdash--dark .fiche-tabs {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+.fiche-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
+}
+.fiche-tab-btn:hover {
+  color: var(--brand-primary);
+  background: var(--bg-page);
+}
+.fiche-tab-btn.active {
+  background: var(--brand-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+.cdash--dark .fiche-tab-btn {
+  color: var(--dark-text-secondary);
+}
+.cdash--dark .fiche-tab-btn:hover {
+  color: var(--brand-muted);
+  background: rgba(255, 255, 255, 0.05);
+}
+.cdash--dark .fiche-tab-btn.active {
+  background: var(--brand-primary);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SECTIONS
+   ═══════════════════════════════════════════════════════════ */
 .fiche-section {
   margin-bottom: 2rem;
 }
 .fiche-section-title {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 800;
   margin-bottom: 1rem;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.fiche-section-title::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+.cdash--dark .fiche-section-title {
+  color: var(--dark-text-primary);
+}
+.cdash--dark .fiche-section-title::after {
+  background: var(--dark-border);
 }
 
-/* ── VITALS GRID ── */
+/* ═══════════════════════════════════════════════════════════
+   VITALS GRID
+   ═══════════════════════════════════════════════════════════ */
 .fiche-vitals-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-}
-.fiche-vital-card {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
   gap: 1rem;
 }
-.fiche-vital-card__label {
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin: 0;
+
+.fiche-vital-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition);
 }
-.fiche-mini-graph {
-  width: 100%;
-  height: 60px;
+.fiche-vital-card:hover {
+  border-color: var(--brand-primary);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.1);
+  transform: translateY(-2px);
+}
+.cdash--dark .fiche-vital-card {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
 }
 
-/* ── ECG CARD ── */
+.fiche-vital-card__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.fiche-mini-graph {
+  width: 100%;
+  height: 55px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ECG CARD
+   ═══════════════════════════════════════════════════════════ */
 .fiche-ecg-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
 }
+.cdash--dark .fiche-ecg-card {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
 .fiche-ecg-card__content {
   display: flex;
   align-items: center;
@@ -135,61 +337,285 @@
 .fiche-ecg-svg {
   width: 100%;
   height: 100px;
-  color: #2f80ed;
+  color: var(--brand-primary);
 }
 
-/* ── BUTTONS ── */
+/* ── ECG Grid Layout ── */
+.fiche-ecg-grid-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+.fiche-ai-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+@media (max-width: 1100px) {
+  .fiche-ecg-grid-layout {
+    grid-template-columns: 1fr;
+  }
+  .fiche-ai-sidebar {
+    order: -1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS
+   ═══════════════════════════════════════════════════════════ */
 .patients-btn-action-blue {
-  background: #2f80ed;
+  background: var(--brand-primary);
   color: #fff;
   border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 8px;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-md);
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all var(--transition);
+  font-family: inherit;
 }
 .patients-btn-action-blue:hover {
-  background: #1a6dd4;
+  background: var(--brand-primary-h);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-brand);
 }
 
-/* ── HISTORY TABLE V2 ── */
+.patients-btn-action-red {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid #fecaca;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.patients-btn-action-red:hover {
+  background: var(--color-danger);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HISTORY TABLE
+   ═══════════════════════════════════════════════════════════ */
 .fiche-history-card {
-  padding: 0;
-  background: transparent;
-  box-shadow: none;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.cdash--dark .fiche-history-card {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
 }
 
 .fiche-v2-table {
   width: 100%;
   border-collapse: collapse;
 }
-
 .fiche-v2-table thead th {
   text-align: left;
-  padding: 1.5rem 0.5rem 0.5rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #a8bdcf; /* Light grey-blue per mockup */
-  background: transparent;
-  border: none;
+  padding: 1rem 1.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--bg-page);
+  border-bottom: 1px solid var(--border-color);
+}
+.cdash--dark .fiche-v2-table thead th {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--dark-border);
+  color: var(--dark-text-muted);
+}
+.fiche-v2-table tbody tr {
+  transition: background var(--transition);
+}
+.fiche-v2-table tbody tr:hover {
+  background: var(--bg-page);
+}
+.cdash--dark .fiche-v2-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .fiche-v2-table tbody td {
-  padding: 1rem 0.5rem;
-  font-size: 0.9rem;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.87rem;
   font-weight: 500;
-  color: #333;
-  border-bottom: 1px solid transparent; /* No visible inner borders per mockup snippet */
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
 }
-
 .cdash--dark .fiche-v2-table tbody td {
-  color: #eee;
+  color: var(--dark-text-primary);
+  border-color: var(--dark-border);
+}
+.fiche-v2-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-/* Adjusting column widths to match the wide spacing of the mockup */
-.fiche-v2-table th:nth-child(1), .fiche-v2-table td:nth-child(1) { width: 15%; }
-.fiche-v2-table th:nth-child(2), .fiche-v2-table td:nth-child(2) { width: 25%; }
-.fiche-v2-table th:nth-child(3), .fiche-v2-table td:nth-child(3) { width: 20%; }
-.fiche-v2-table th:nth-child(4), .fiche-v2-table td:nth-child(4) { width: 40%; }
+/* Column widths */
+.fiche-v2-table th:nth-child(1),
+.fiche-v2-table td:nth-child(1) {
+  width: 15%;
+}
+.fiche-v2-table th:nth-child(2),
+.fiche-v2-table td:nth-child(2) {
+  width: 25%;
+}
+.fiche-v2-table th:nth-child(3),
+.fiche-v2-table td:nth-child(3) {
+  width: 20%;
+}
+.fiche-v2-table th:nth-child(4),
+.fiche-v2-table td:nth-child(4) {
+  width: 40%;
+}
+
+/* ── HISTORY CONTAINER Animation ── */
+.fiche-history-container {
+  animation: fadeSlideIn 0.3s ease;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.history-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-muted);
+  gap: 1rem;
+}
+
+.cdash-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--brand-primary);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── PDF Mode ── */
+.pdf-mode {
+  background-color: white !important;
+  color: black !important;
+}
+.pdf-mode .btn-edit-medical,
+.pdf-mode .ecg-controls,
+.pdf-mode .fiche-vital-card__head button,
+.pdf-mode .patients-btn-action-blue,
+.pdf-mode .patients-btn-action-red,
+.pdf-mode .fiche-tabs {
+  display: none !important;
+}
+.pdf-mode .ecg-canvas-wrapper {
+  border: 1px solid #ccc !important;
+  background-color: #fff !important;
+}
+
+/* ── PRESCRIPTIONS SECTION ── */
+.fiche-prescriptions-section {
+  animation: fadeSlideIn 0.3s ease;
+}
+
+.fiche-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.fiche-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.presc-med-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.presc-med-chip {
+  background: var(--brand-light);
+  color: var(--brand-primary);
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #bfdbfe;
+}
+
+.presc-status-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.presc-status--active { background: #dcfce7; color: #166534; }
+.presc-status--terminée { background: #f1f5f9; color: #475569; }
+.presc-status--annulée { background: #fee2e2; color: #991b1b; }
+
+.presc-export-actions {
+  display: flex;
+  gap: 8px;
+}
+.presc-export-actions button {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.presc-export-actions button:hover {
+  border-color: var(--brand-primary);
+  background: var(--brand-light);
+  color: var(--brand-primary);
+}
+
+.cdash--dark .presc-med-chip {
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+  border-color: rgba(37, 99, 235, 0.3);
+}
+.cdash--dark .presc-export-actions button {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+.cdash--dark .presc-export-actions button:hover {
+  background: #2563eb;
+  color: white;
+}

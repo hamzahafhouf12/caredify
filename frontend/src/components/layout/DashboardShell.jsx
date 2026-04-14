@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import "./DashboardShell.css"
+import { Link } from "react-router-dom";
+import "./DashboardShell.css";
 
 /**
  * En-tête et zone de contenu communs aux tableaux de bord.
@@ -12,7 +12,10 @@ function DashboardShell({ title, description, children }) {
           <Link to="/" className="dashboard-shell__brand">
             Caredify
           </Link>
-          <nav className="dashboard-shell__nav" aria-label="Navigation principale">
+          <nav
+            className="dashboard-shell__nav"
+            aria-label="Navigation principale"
+          >
             <Link to="/" className="dashboard-shell__link">
               Accueil
             </Link>
@@ -31,7 +34,7 @@ function DashboardShell({ title, description, children }) {
       </header>
       <main className="dashboard-shell__main">{children}</main>
     </div>
-  )
+  );
 }
 
-export default DashboardShell
+export default DashboardShell;

@@ -1,4 +1,4 @@
-import DashboardRoleView from "../../components/dashboard/DashboardRoleView"
+import DashboardRoleView from "../../components/dashboard/DashboardRoleView";
 
 function CliniqueDashboard() {
   return (
@@ -7,7 +7,7 @@ function CliniqueDashboard() {
       description="Vue d'ensemble de l'activité et des dossiers patients."
       placeholder="Contenu du tableau de bord clinique à brancher sur l'API."
     />
-  )
+  );
 }
 
-export default CliniqueDashboard
+export default CliniqueDashboard;

@@ -1,19 +1,19 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import AuthLayout from "../../components/auth/AuthLayout"
-import { ROLES } from "../../constants/roles"
-import "./RoleSelect.css"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthLayout from "../../components/auth/AuthLayout";
+import { ROLES } from "../../constants/roles";
+import "./RoleSelect.css";
 
 function RoleSelect() {
-  const [selected, setSelected] = useState(null)
-  const navigate = useNavigate()
+  const [selected, setSelected] = useState(null);
+  const navigate = useNavigate();
 
   const handleSelect = (roleId) => {
-    setSelected(roleId)
+    setSelected(roleId);
     setTimeout(() => {
-      navigate(`/login/${roleId}`)
-    }, 350)
-  }
+      navigate(`/login/${roleId}`);
+    }, 350);
+  };
 
   return (
     <AuthLayout>
@@ -39,7 +39,7 @@ function RoleSelect() {
         ))}
       </div>
     </AuthLayout>
-  )
+  );
 }
 
-export default RoleSelect
+export default RoleSelect;

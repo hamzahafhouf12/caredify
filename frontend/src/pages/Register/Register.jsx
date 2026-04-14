@@ -1,13 +1,13 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import AuthLayout from "../../components/auth/AuthLayout"
-import { ROLES } from "../../constants/roles"
-import "./Register.css"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import AuthLayout from "../../components/auth/AuthLayout";
+import { ROLES } from "../../constants/roles";
+import "./Register.css";
 
 function Register() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     nom: "",
@@ -16,15 +16,15 @@ function Register() {
     password: "",
     confirmPassword: "",
     role: "",
-  })
+  });
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-    setError("")
-  }
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (
       !form.nom ||
@@ -34,25 +34,26 @@ function Register() {
       !form.confirmPassword ||
       !form.role
     ) {
-      setError("Veuillez remplir tous les champs.")
-      return
+      setError("Veuillez remplir tous les champs.");
+      return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.")
-      return
+      setError("Les mots de passe ne correspondent pas.");
+      return;
     }
 
     if (form.password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères.")
-      return
+      setError("Le mot de passe doit contenir au moins 6 caractères.");
+      return;
     }
 
-    setError("")
-    setLoading(true)
-    
+    setError("");
+    setLoading(true);
+
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
       const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,24 +62,27 @@ function Register() {
           prenom: form.prenom,
           email: form.email,
           password: form.password,
-          role: form.role
+          role: form.role,
         }),
-      })
+      });
 
-      const text = await response.text()
-      let data = {}
+      const text = await response.text();
+      let data = {};
 
       if (text) {
         try {
-          data = JSON.parse(text)
+          data = JSON.parse(text);
         } catch (parseError) {
-          console.error("Non-JSON response from backend:", text)
-          setError("Erreur serveur inattendue (Format invalide)")
-          return
+          console.error("Non-JSON response from backend:", text);
+          setError("Erreur serveur inattendue (Format invalide)");
+          return;
         }
       }
 
-      console.log("Register Backend response:", { status: response.status, data })
+      console.log("Register Backend response:", {
+        status: response.status,
+        data,
+      });
 
       if (!response.ok) {
         let errorMsg = "Erreur inconnue provenant du serveur";
@@ -86,19 +90,19 @@ function Register() {
         else if (data.error) errorMsg = data.error;
         else if (Object.keys(data).length > 0) errorMsg = JSON.stringify(data);
         else errorMsg = `Code d'erreur HTTP: ${response.status} (réponse vide)`;
-        
-        setError(errorMsg)
-        return // Do NOT navigate away on error
+
+        setError(errorMsg);
+        return; // Do NOT navigate away on error
       }
 
       // Only navigate on true success
-      navigate(`/login/${form.role}`)
+      navigate(`/login/${form.role}`);
     } catch (err) {
-      setError(err.message || "Impossible de joindre le serveur")
+      setError(err.message || "Impossible de joindre le serveur");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <AuthLayout containerClassName="register-container">
@@ -195,16 +199,13 @@ function Register() {
 
         <p className="auth-form__footer">
           Déjà un compte ?{" "}
-          <span
-            onClick={() => navigate("/login")}
-            className="forgot-link"
-          >
+          <span onClick={() => navigate("/login")} className="forgot-link">
             Se connecter
           </span>
         </p>
       </form>
     </AuthLayout>
-  )
+  );
 }
 
-export default Register
+export default Register;

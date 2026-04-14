@@ -1,0 +1,303 @@
+/* ═══════════════════════════════════════════════════
+   Patient Medical Modal CSS
+   ═══════════════════════════════════════════════════ */
+
+.medical-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: modalFadeIn 0.2s ease;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.medical-modal {
+  background: white;
+  width: 90%;
+  max-width: 550px;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cdash--dark .medical-modal {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.medical-modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cdash--dark .medical-modal-header {
+  border-bottom-color: #334155;
+}
+
+.medical-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.cdash--dark .medical-modal-header h2 {
+  color: #f1f5f9;
+}
+
+.medical-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.medical-modal-close:hover {
+  color: #ef4444;
+}
+
+.medical-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal-divider {
+  border: 0;
+  height: 1px;
+  background: #f1f5f9;
+  margin: 0.5rem 0;
+}
+
+.cdash--dark .modal-divider {
+  background: #334155;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #475569;
+  margin-bottom: 0.5rem;
+}
+
+.cdash--dark .form-group label {
+  color: #cbd5e1;
+}
+
+.medical-select,
+.add-item-row input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  font-size: 0.95rem;
+  color: #1e293b;
+  transition: border-color 0.2s;
+}
+
+.medical-select:focus,
+.add-item-row input:focus {
+  outline: none;
+  border-color: #2f80ed;
+  box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.1);
+}
+
+.cdash--dark .medical-select,
+.cdash--dark .add-item-row input {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.cdash--dark .medical-select:focus,
+.cdash--dark .add-item-row input:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.medical-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ant-tag {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.cdash--dark .ant-tag {
+  background: rgba(153, 27, 27, 0.2);
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+.trait-tag {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.cdash--dark .trait-tag {
+  background: rgba(30, 64, 175, 0.2);
+  color: #93c5fd;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+.medical-tag button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.medical-tag button:hover {
+  opacity: 1;
+}
+
+.add-item-row {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-add {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 0 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  background: #e2e8f0;
+}
+
+.cdash--dark .btn-add {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.cdash--dark .btn-add:hover {
+  background: #475569;
+}
+
+.medical-modal-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background: #f8fafc;
+}
+
+.cdash--dark .medical-modal-footer {
+  border-top-color: #334155;
+  background: #0f172a;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.cdash--dark .btn-cancel {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.cdash--dark .btn-cancel:hover {
+  background: #334155;
+  color: #e2e8f0;
+}
+
+.btn-save {
+  background: #2f80ed;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(47, 128, 237, 0.2);
+  transition: background 0.2s;
+}
+
+.btn-save:hover {
+  background: #1d68ce;
+}

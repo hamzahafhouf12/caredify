@@ -1,27 +1,84 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Orbitron:wght@700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap");
+
+/* ═══════════════════════════════════════════════════════════
+   CAREDIFY DESIGN SYSTEM — Tokens
+   ═══════════════════════════════════════════════════════════ */
 
 :root {
-  --blue-primary: #2f80ed;
-  --blue-light: #8fb3d9;
-  --blue-bg-light: #c8dff0;
-  --blue-right-light: #a8c8e8;
-  --white: #ffffff;
-  --text-dark: #1a1a2e;
-  --text-muted: #666;
-  --input-border: #d0dce8;
-  --input-bg: #f7fafd;
-  --shadow: 0 20px 60px rgba(47, 128, 237, 0.15);
+  /* ── Brand ── */
+  --brand-primary: #2563eb;
+  --brand-primary-h: #1d4ed8;
+  --brand-light: #dbeafe;
+  --brand-muted: #93c5fd;
 
-  --dark-bg: #0d1b2a;
-  --dark-panel: #1a2a3d;
-  --dark-right: #1c3354;
-  --dark-card: #1e1e1e;
-  --dark-input-bg: #243447;
-  --dark-input-border: #2d4a6a;
-  --dark-text: #e0eaf5;
-  --dark-muted: #7a9ab5;
+  /* ── Status / Alert colors ── */
+  --color-danger: #ef4444;
+  --color-danger-bg: #fef2f2;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-success: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-info: #3b82f6;
+  --color-info-bg: #eff6ff;
+
+  /* ── Neutrals (light mode) ── */
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fafbfc;
+  --bg-input: #f8fafc;
+  --border-color: #e2e8f0;
+  --border-focus: #2563eb;
+
+  /* ── Text ── */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-on-brand: #ffffff;
+
+  /* ── Sidebar ── */
+  --sidebar-width: 220px;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #e2e8f0;
+
+  /* ── Topbar ── */
+  --topbar-h: 56px;
+  --topbar-bg: rgba(255, 255, 255, 0.9);
+  --topbar-border: #e2e8f0;
+
+  /* ── Shadows ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.07), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-brand: 0 4px 14px rgba(37, 99, 235, 0.25);
+
+  /* ── Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ── */
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Dark Mode Overrides (applied on .cdash--dark) ── */
+  --dark-bg-page: #0d1117;
+  --dark-bg-card: #161b22;
+  --dark-bg-card-hover: #1c2431;
+  --dark-bg-input: #1c2431;
+  --dark-border: #21262d;
+  --dark-text-primary: #e2e8f0;
+  --dark-text-secondary: #94a3b8;
+  --dark-text-muted: #64748b;
+  --dark-sidebar-bg: #161b22;
+  --dark-topbar-bg: rgba(22, 27, 34, 0.95);
 }
 
+/* ── Global Reset ── */
 *,
 *::before,
 *::after {
@@ -30,7 +87,84 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: "Nunito", system-ui, sans-serif;
-  background: var(--blue-bg-light);
+  font-family: "Inter", "Nunito", system-ui, sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  font-family: inherit;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ── Utility Card ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Status Badge Utilities ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.badge--red {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+.badge--orange {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+.badge--green {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+.badge--blue {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+.badge--gray {
+  background: #f1f5f9;
+  color: #64748b;
 }

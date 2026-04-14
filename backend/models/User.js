@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema(
     // --- Password Reset ---
     resetPasswordToken:   { type: String },
     resetPasswordExpires: { type: Date },
+
+    // --- Profile Info ---
+    avatar:     { type: String },
+    specialite: { type: String, default: "Cardiologue" },
   },
   { timestamps: true }
 );

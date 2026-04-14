@@ -1,14 +1,14 @@
 /* ═══════════════════════════════════════════════════════════
-   Patients Page V2 Refinement CSS
+   Patients Page CSS — Patient List View
    ═══════════════════════════════════════════════════════════ */
 
 .v2-patients-page {
   flex: 1;
-  padding: 1rem 0;
+  padding: 0;
+  min-width: 0;
 }
 
-/* ── TOOLBAR */
-
+/* ── TOOLBAR ── */
 .v2-toolbar-right {
   flex: 1;
   display: flex;
@@ -18,7 +18,7 @@
 .v2-search-box {
   position: relative;
   width: 100%;
-  max-width: 280px;
+  max-width: 300px;
 }
 
 .v2-search-icon {
@@ -27,70 +27,98 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.9rem;
-  opacity: 0.5;
+  color: var(--text-muted);
   pointer-events: none;
 }
 
 .v2-search-input {
   width: 100%;
-  padding: 8px 12px 8px 36px;
-  border-radius: 20px;
-  border: 1px solid #e1e4e8;
-  background: #fcfcfc;
+  padding: 9px 14px 9px 38px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
   font-size: 0.85rem;
   outline: none;
-  transition: border-color 0.2s;
+  color: var(--text-primary);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+  font-family: inherit;
+  box-shadow: var(--shadow-xs);
 }
 .v2-search-input:focus {
-  border-color: #2f80ed;
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
 .cdash--dark .v2-search-input {
-  background: #0d1117;
-  border-color: #30363d;
-  color: #fff;
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
 }
 
-/* ── TABLE ── */
+/* ── TABLE CARD ── */
 .v2-patients-table-card {
-  padding: 0.5rem 0.25rem;
-  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+.cdash--dark .v2-patients-table-card {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
 }
 
 .v2-table {
-  border-top: 1px solid #eee; /* Faint line per mockup */
-}
-.cdash--dark .v2-table {
-  border-top-color: #21262d;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .v2-table thead th {
-  background: transparent;
-  padding: 1.25rem 1.5rem;
-  font-size: 0.8rem;
+  background: var(--bg-page);
+  padding: 0.95rem 1.5rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #8c98a5;
-  text-transform: none;
-  letter-spacing: 0;
-  border-bottom: 1px solid #f0f0f0;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+  white-space: nowrap;
 }
 .cdash--dark .v2-table thead th {
-  border-bottom-color: #21262d;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--dark-border);
+  color: var(--dark-text-muted);
 }
 
 .v2-table tbody tr {
-  height: 60px;
+  transition: background var(--transition);
+}
+.v2-table tbody tr:hover {
+  background: var(--bg-page);
+}
+.cdash--dark .v2-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .v2-table td {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.85rem;
-  border-bottom: 1px solid #f8f9fa;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  vertical-align: middle;
 }
 .cdash--dark .v2-table td {
-  border-bottom-color: #161b22;
+  border-color: var(--dark-border);
+  color: var(--dark-text-primary);
+}
+.v2-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
+/* ── Patient Cell ── */
 .v2-patient-cell {
   display: flex;
   align-items: center;
@@ -98,30 +126,123 @@
 }
 
 .v2-patient-avatar {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eee;
+  background: var(--brand-light);
   border-radius: 50%;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  border: 2px solid white;
+  box-shadow: var(--shadow-xs);
 }
 .cdash--dark .v2-patient-avatar {
-  background: #30363d;
+  background: rgba(37, 99, 235, 0.15);
+  border-color: var(--dark-border);
 }
 
 .v2-patient-name {
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.cdash--dark .v2-patient-name {
+  color: var(--dark-text-primary);
 }
 
-/* Actions Links */
+/* ── Action Links ── */
 .v2-link-blue {
-  color: #2f80ed;
+  color: var(--brand-primary);
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--brand-light);
+  transition: all var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 .v2-link-blue:hover {
-  text-decoration: underline;
+  background: var(--brand-primary);
+  color: white;
+  border-color: var(--brand-primary);
+  box-shadow: var(--shadow-brand);
 }
+
+/* ── Add Patient Button ── */
+.v2-btn-add-patient {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--brand-primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+  box-shadow: var(--shadow-brand);
+}
+.v2-btn-add-patient:hover {
+  background: var(--brand-primary-h);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+}
+
+/* ── Badges & Status Pills ── */
+.v2-badge-risk {
+  display: inline-flex;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.v2-badge-risk--faible {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+.v2-badge-risk--modéré {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+
+.v2-badge-risk--élevé {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+.v2-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.v2-status-pill::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.v2-status--stable { color: #22c55e; }
+.v2-status--stable::before { background: #22c55e; }
+
+.v2-status--modéré { color: #f59e0b; }
+.v2-status--modéré::before { background: #f59e0b; }
+
+.v2-status--critique { color: #ef4444; }
+.v2-status--critique::before { background: #ef4444; }

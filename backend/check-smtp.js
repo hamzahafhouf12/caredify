@@ -1,16 +1,17 @@
-require("dotenv").config();
+require("dotenv").config({ path: "./backend/.env" });
 const nodemailer = require("nodemailer");
 
 async function checkSMTP() {
   console.log("--- 🕵️ AUDIT SMTP CAREDIFY ---");
-  console.log("Email : ", process.env.EMAIL_USER);
-  console.log("Pass (longueur) : ", (process.env.EMAIL_PASS || "").length);
+  console.log("Host : ", process.env.MAILTRAP_HOST);
+  console.log("User : ", process.env.MAILTRAP_USER);
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.MAILTRAP_HOST,
+    port: process.env.MAILTRAP_PORT,
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
+      user: process.env.MAILTRAP_USER,
+      pass: process.env.MAILTRAP_PASS
     }
   });
 
@@ -21,10 +22,10 @@ async function checkSMTP() {
 
     console.log("2. Tentative d'envoi d'e-mail...");
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
+      from: `"Caredify Test" <no-reply@caredify.dev>`,
+      to: "test@caredify.dev",
       subject: "Test Final Caredify",
-      text: "L'envoi fonctionne !"
+      text: "L'envoi fonctionne via Mailtrap !"
     });
     console.log("🚀 E-mail envoyé avec succès !");
   } catch (error) {

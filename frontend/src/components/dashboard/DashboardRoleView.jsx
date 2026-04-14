@@ -1,4 +1,4 @@
-import DashboardShell from "../layout/DashboardShell"
+import DashboardShell from "../layout/DashboardShell";
 
 /**
  * Tableau de bord générique : évite de répéter le même JSX sur chaque rôle.
@@ -10,7 +10,7 @@ function DashboardRoleView({ title, description, placeholder }) {
         <p>{placeholder}</p>
       </section>
     </DashboardShell>
-  )
+  );
 }
 
-export default DashboardRoleView
+export default DashboardRoleView;

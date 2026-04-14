@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import caredifyLogo from "../../assets/Caredify-logo.png"
+import { Link } from "react-router-dom";
+import caredifyLogo from "../../assets/Caredify-logo.png";
 
 function Sidebar({ navItems, doctorInfo }) {
   return (
@@ -7,7 +7,15 @@ function Sidebar({ navItems, doctorInfo }) {
       <div className="cdash-sidebar__top">
         <div className="cdash-sidebar__avatar-wrap">
           <div className="cdash-sidebar__avatar-circle">
-            <span className="cdash-sidebar__avatar-emoji">👨‍⚕️</span>
+            {doctorInfo.avatar ? (
+              <img
+                src={doctorInfo.avatar}
+                alt="Doctor"
+                className="cdash-sidebar__avatar-img"
+              />
+            ) : (
+              <span className="cdash-sidebar__avatar-emoji">👨‍⚕️</span>
+            )}
           </div>
         </div>
         <p className="cdash-sidebar__doctor-name">{doctorInfo.name}</p>
@@ -28,10 +36,14 @@ function Sidebar({ navItems, doctorInfo }) {
       </nav>
 
       <div className="cdash-sidebar__bottom">
-        <img src={caredifyLogo} alt="Caredify" className="cdash-sidebar__logo-img" />
+        <img
+          src={caredifyLogo}
+          alt="Caredify"
+          className="cdash-sidebar__logo-img"
+        />
       </div>
     </aside>
-  )
+  );
 }
 
-export default Sidebar
+export default Sidebar;
