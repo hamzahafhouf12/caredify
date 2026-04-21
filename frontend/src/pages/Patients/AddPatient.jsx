@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import MedicalLayout from "../../components/layout/MedicalLayout";
 import { doctorInfo, navItems } from "../../constants/medical";
+import { apiPost } from "../../utils/api";
 import "./Patients.css";
 
 function AddPatient() {
@@ -28,17 +29,7 @@ function AddPatient() {
     setError("");
 
     try {
-      const token = localStorage.getItem("caredify_token");
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${API_URL}/patients`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(form),
-      });
+      const response = await apiPost(`/patients`, form);
 
       const data = await response.json();
 

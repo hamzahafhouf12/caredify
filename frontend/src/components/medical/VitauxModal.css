@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════════════════════
+   VitauxModal — Overlay + Box
+   ═══════════════════════════════════════════════════════════ */
+.vitaux-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.vitaux-modal-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+  width: min(680px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Header ── */
+.vitaux-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1.5rem 1.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.vitaux-modal-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 4px;
+}
+
+.vitaux-modal-subtitle {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.vitaux-modal-close {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.vitaux-modal-close:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* ── Form ── */
+.vitaux-modal-form {
+  padding: 1.25rem 1.75rem;
+}
+
+/* ── Fields Grid ── */
+.vitaux-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.vitaux-field-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vitaux-field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vitaux-field-icon { font-size: 1rem; }
+
+.vitaux-field-unit {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.vitaux-input-wrap {
+  position: relative;
+}
+
+.vitaux-input {
+  width: 100%;
+  padding: 0.6rem 3rem 0.6rem 0.85rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  background: #f8fafc;
+}
+.vitaux-input:focus {
+  outline: none;
+  border-color: var(--field-color, #2563eb);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--field-color, #2563eb) 15%, transparent);
+  background: #fff;
+}
+.vitaux-input::placeholder {
+  color: #cbd5e1;
+  font-weight: 400;
+}
+
+/* Remove number arrows */
+.vitaux-input::-webkit-outer-spin-button,
+.vitaux-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.vitaux-input-unit {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.vitaux-range-hint {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ── Note clinique ── */
+.vitaux-note-section {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vitaux-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: #1e293b;
+  resize: vertical;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  background: #f8fafc;
+}
+.vitaux-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background: #fff;
+}
+
+/* ── Error ── */
+.vitaux-error {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* ── Footer ── */
+.vitaux-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.vitaux-btn-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.vitaux-btn-cancel:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #374151;
+}
+
+.vitaux-btn-save {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+.vitaux-btn-save:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+}
+.vitaux-btn-save:disabled,
+.vitaux-btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ── */
+.vitaux-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Success ── */
+.vitaux-modal-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  gap: 1rem;
+  text-align: center;
+}
+.vitaux-success-icon { font-size: 3rem; animation: bounceIn 0.5s; }
+@keyframes bounceIn {
+  0%   { transform: scale(0); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.vitaux-modal-success p {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #22c55e;
+  margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 540px) {
+  .vitaux-field-grid { grid-template-columns: 1fr; }
+  .vitaux-modal-box  { width: 98vw; }
+}

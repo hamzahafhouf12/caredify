@@ -46,12 +46,16 @@ router.post("/record", async (req, res, next) => {
     });
 
     // --- Automated Alert & Risk Logic ---
-    const { scoreRisque, arythmie, fibrillationAuriculaire, resumeIA } = ecg.iaInterpretations;
+    const { scoreRisque, arythmie, fibrillationAuriculaire, resumeIA, detailedClassification } = ecg.iaInterpretations;
     let niveauRisque = "Faible";
     
-    if (scoreRisque >= 70 || fibrillationAuriculaire) {
+    // Predominant class from detailed model
+    const probas = detailedClassification || {};
+    const hasAnomaly = (probas.pvc > 0.6 || probas.sveb > 0.6 || probas.fusion > 0.6);
+
+    if (scoreRisque >= 70 || fibrillationAuriculaire || hasAnomaly) {
       niveauRisque = "Élevé";
-    } else if (scoreRisque >= 40 || arythmie) {
+    } else if (scoreRisque >= 40 || arythmie || (probas.pvc > 0.3 || probas.sveb > 0.3)) {
       niveauRisque = "Modéré";
     }
 
@@ -136,87 +140,13 @@ router.get("/:id", async (req, res, next) => {
  */
 router.put("/:id/review", async (req, res, next) => {
   try {
-    const { decisionIA, annotationMedecin } = req.body;
-    
-    if (!["confirmé", "rejeté", "corrigé"].includes(decisionIA)) {
-       const err = new Error("Décision invalide");
-       err.statusCode = 400;
-       return next(err);
-    }
-
+    const { annotationMedecin, decisionIA, revue } = req.body;
     const ecg = await ECGRecord.findByIdAndUpdate(
       req.params.id,
-      { 
-        decisionIA, 
-        annotationMedecin, 
-        revue: true 
-      },
+      { annotationMedecin, decisionIA, revue },
       { new: true }
     );
-
-    if (!ecg) {
-      const err = new Error("Enregistrement ECG non trouvé");
-      err.statusCode = 404;
-      return next(err);
-    }
-
     res.json(ecg);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.put("/:id/annotation", async (req, res, next) => {
-  try {
-    const { annotationMedecin } = req.body;
-    const ecg = await ECGRecord.findByIdAndUpdate(
-      req.params.id,
-      { annotationMedecin, revue: true },
-      { new: true }
-    );
-
-    if (!ecg) {
-      const err = new Error("ECG Record not found");
-      err.statusCode = 404;
-      return next(err);
-    }
-
-    res.json(ecg);
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * @route PUT /api/ecg/:id/annotations_temp
- * @desc  Add a temporal annotation to a specific period of the ECG
- */
-router.put("/:id/annotations_temp", async (req, res, next) => {
-  try {
-    const { startTime, endTime, note } = req.body;
-
-    if (startTime === undefined || endTime === undefined || !note) {
-      const err = new Error("Les données de l'annotation sont incomplètes (startTime, endTime, note).");
-      err.statusCode = 400;
-      return next(err);
-    }
-
-    const ecg = await ECGRecord.findById(req.params.id);
-    if (!ecg) {
-      const err = new Error("ECG Record not found");
-      err.statusCode = 404;
-      return next(err);
-    }
-
-    ecg.annotationsTemporelles.push({
-      startTime,
-      endTime,
-      note,
-      medecinId: req.user._id
-    });
-
-    const updatedEcg = await ecg.save();
-    res.json(updatedEcg);
   } catch (error) {
     next(error);
   }

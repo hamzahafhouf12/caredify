@@ -50,6 +50,17 @@ const ecgRecordSchema = new mongoose.Schema(
       hrvFaible:          { type: Boolean, default: false },
       scoreRisque:        { type: Number, default: 0 }, // 0-100
       resumeIA:           { type: String, default: "" },
+      
+      // New: Advanced Transformer + XAI support
+      detailedClassification: {
+        normal:       { type: Number, default: 0 },
+        pvc:          { type: Number, default: 0 },
+        sveb:         { type: Number, default: 0 },
+        fusion:       { type: Number, default: 0 },
+        unclassified: { type: Number, default: 0 }
+      },
+      // xaiHeatmap: Array of importance scores matching signal length
+      xaiHeatmap: { type: [Number], default: [] }
     },
 
     // Annotations temporelles spécifiques sur le tracé ECG

@@ -2,7 +2,7 @@ import React from "react";
 import "./AIInsightsCard.css";
 
 // ─── Données cliniques enrichies par type d'anomalie ───────────────────────
-const CLINICAL_DATA = {
+export const CLINICAL_DATA = {
   arythmie: {
     label: "Arythmie",
     severity: "high",

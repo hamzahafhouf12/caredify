@@ -10,6 +10,7 @@ const InteractiveECG = ({
   leads = [],
   annotations = [],
   temporalAnnotations = [], // [{ startTime: 0.5, endTime: 1.2, note: "Anomalie" }]
+  heatmap = [], // Array of importance scores [0..1]
   onAddTemporalAnnotation = null,
   sampleRate = 250,
   height = 300,
@@ -68,6 +69,11 @@ const InteractiveECG = ({
     const draw = () => {
       ctx.clearRect(0, 0, rect.width, height);
       drawGrid(ctx, rect.width, height, offsetX);
+
+      // Dessiner la Heatmap XAI (Grad-CAM)
+      if (heatmap && heatmap.length > 0) {
+        drawHeatmap(ctx, rect.width, height, heatmap, pxPerSecond, offsetX);
+      }
 
       // Dessiner les leads (superposition)
       if (leads.length > 0) {
@@ -242,6 +248,33 @@ const InteractiveECG = ({
       ctx.font = "bold 11px Inter";
       ctx.fillText(ann.note, drawStartX + 4, 15);
     });
+  };
+
+  const drawHeatmap = (ctx, width, height, data, pxPerSec, offset) => {
+    if (!data || data.length === 0) return;
+    
+    // On dessine par segments pour optimiser
+    const step = 1; // 1 pixel par échantillon de heatmap
+    const signalLengthInSamples = points.length || (leads[0]?.data.length) || data.length;
+    
+    ctx.save();
+    // ctx.globalCompositeOperation = 'multiply'; // Retrait pour meilleure visibilité sur fond blanc
+    
+    const startIndex = Math.max(0, Math.floor((-offset / pxPerSec) * sampleRate));
+    const endIndex = Math.min(data.length, Math.ceil(((width - offset) / pxPerSec) * sampleRate) + 1);
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const importance = data[i];
+      if (importance < 0.05) continue; // Ignorer les bruits faibles
+      
+      const x = offset + (i / sampleRate) * pxPerSec;
+      const nextX = offset + ((i + 1) / sampleRate) * pxPerSec;
+      
+      // Couleur rouge plus intense pour le diagnostic
+      ctx.fillStyle = `rgba(255, 30, 0, ${importance * 0.6})`;
+      ctx.fillRect(x, 0, nextX - x + 0.5, height);
+    }
+    ctx.restore();
   };
 
   const drawSelection = (ctx, startPx, endPx, height) => {

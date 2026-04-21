@@ -24,7 +24,8 @@ const ecgRoutes          = require("./routes/ecgRoutes");
 const prescriptionRoutes = require("./routes/prescriptionRoutes");
 const alertRoutes        = require("./routes/alertRoutes");
 const messageRoutes      = require("./routes/messageRoutes");
-const userRoutes        = require("./routes/userRoutes");
+const userRoutes         = require("./routes/userRoutes");
+const vitalsRoutes       = require("./routes/vitalsRoutes");
 
 app.use("/api/auth",          authRoutes);
 app.use("/api/patients",      patientRoutes);
@@ -34,6 +35,7 @@ app.use("/api/prescriptions", prescriptionRoutes);
 app.use("/api/alerts",        alertRoutes);
 app.use("/api/messages",      messageRoutes);
 app.use("/api/users",         userRoutes);
+app.use("/api/vitals",        vitalsRoutes);
 
 // Health check
 app.get("/api", (req, res) => {

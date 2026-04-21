@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MedicalLayout from "../../components/layout/MedicalLayout";
 import { doctorInfo, navItems } from "../../constants/medical";
+import { apiGet } from "../../utils/api";
+import { formatDate } from "../../utils/date";
 import "./CardiologueDashboard.css";
 
 function getStatusColor(etat) {
@@ -59,6 +61,14 @@ function TrendChart({ data, color = "#2563eb", height = 30 }) {
 /* ─── Composant ────────────────────────────────────────── */
 
 function CardiologueDashboard() {
+  const navigate = useNavigate();
+
+  const handlePatientClick = (pid) => {
+    if (!pid) return;
+    localStorage.setItem("activePatientId", pid);
+    navigate("/cardiologue/patients/fichepatient");
+  };
+
   const [stats, setStats] = useState({
     totalPatients: 0,
     urgentesCount: 0,
@@ -74,12 +84,7 @@ function CardiologueDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem("caredify_token");
-        const API_URL =
-          import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-        const response = await fetch(`${API_URL}/dashboard/stats`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiGet("/dashboard/stats");
         if (response.ok) {
           const data = await response.json();
           setStats(data);
@@ -177,7 +182,7 @@ function CardiologueDashboard() {
           <span>
             Aujourd'hui :{" "}
             <strong>
-              {new Date().toLocaleDateString("fr-FR", {
+              {formatDate(new Date(), "fr-FR", {
                 day: "2-digit",
                 month: "2-digit",
                 year: "numeric",
@@ -233,7 +238,13 @@ function CardiologueDashboard() {
                     <span className="v3-risk-label">Niveau de Risque</span>
                     <span className="v3-risk-value">Élevé</span>
                   </div>
-                  <Link to={`/cardiologue/patients/${p._id}`} className="v3-btn-icon-link">➔</Link>
+                  <button
+                    className="v3-btn-icon-link"
+                    onClick={() => handlePatientClick(p._id)}
+                    title="Voir la fiche"
+                  >
+                    ➔
+                  </button>
                 </div>
               ))}
             </div>
@@ -273,16 +284,28 @@ function CardiologueDashboard() {
               <div className="v3-trend-item">
                 <div className="v3-trend-meta">
                   <span className="v3-trend-label">Fréquence Cardiaque</span>
-                  <span className="v3-trend-val">{stats.vitals.avgFrequenceCardiaque || '--'} bpm</span>
+                  <span className="v3-trend-val">
+                    {stats.vitals.avgFrequenceCardiaque
+                      ? `${stats.vitals.avgFrequenceCardiaque} bpm`
+                      : <span style={{fontSize:'0.8rem', color:'#94a3b8', fontWeight:500}}>Pas de données</span>}
+                  </span>
                 </div>
-                <TrendChart data={stats.vitals.trends.map(t => t.hr)} color="#2563eb" />
+                {stats.vitals.trends.length >= 2 && (
+                  <TrendChart data={stats.vitals.trends.map(t => t.hr)} color="#2563eb" />
+                )}
               </div>
               <div className="v3-trend-item">
                 <div className="v3-trend-meta">
                   <span className="v3-trend-label">Variabilité HRV</span>
-                  <span className="v3-trend-val">{stats.vitals.avgHrv || '--'} ms</span>
+                  <span className="v3-trend-val">
+                    {stats.vitals.avgHrv
+                      ? `${stats.vitals.avgHrv} ms`
+                      : <span style={{fontSize:'0.8rem', color:'#94a3b8', fontWeight:500}}>Pas de données</span>}
+                  </span>
                 </div>
-                <TrendChart data={stats.vitals.trends.map(t => t.hrv)} color="#0ea5e9" />
+                {stats.vitals.trends.length >= 2 && (
+                  <TrendChart data={stats.vitals.trends.map(t => t.hrv)} color="#0ea5e9" />
+                )}
               </div>
             </div>
           </div>
@@ -320,47 +343,149 @@ function CardiologueDashboard() {
         <div className="cdash-card v3-ecg-card">
           <div className="v3-head-row">
             <h2 className="v3-section-title">
-              Dernier ECG{" "}
+              Dernier ECG
               {stats.dernierECG?.patient &&
-                `(${stats.dernierECG.patient.nom} ${stats.dernierECG.patient.prenom})`}{" "}
-              :
+                ` — ${stats.dernierECG.patient.nom} ${stats.dernierECG.patient.prenom}`}
             </h2>
-            {stats.dernierECG && (
-              <span className="v3-ecg-time">
-                {formatTime(stats.dernierECG.createdAt)}
-              </span>
-            )}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              {stats.dernierECG && (
+                <span className="v3-ecg-time">
+                  {formatTime(stats.dernierECG.createdAt)}
+                </span>
+              )}
+              <Link to="/cardiologue/ecg-inbox" className="v3-link-blue" style={{ fontSize: "0.8rem" }}>
+                Boîte ECG →
+              </Link>
+            </div>
           </div>
-          <div className="v3-ecg-grid-container">
-            {stats.dernierECG?.signalData?.length > 0 ? (
-              <svg viewBox="0 0 800 160" className="v3-ecg-trace-svg">
-                <polyline
-                  fill="none"
-                  stroke="#222"
-                  strokeWidth="1.5"
-                  points={stats.dernierECG.signalData
-                    .map(
-                      (val, i) =>
-                        `${(i / (stats.dernierECG.signalData.length - 1)) * 800},${80 - val * 60}`,
-                    )
-                    .join(" ")}
-                />
-              </svg>
-            ) : (
-              <div
-                style={{
-                  height: "160px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#888",
-                }}
-              >
-                Aucun tracé ECG récent reçu.
+
+          {!stats.dernierECG ? (
+            /* ── Pas d'ECG du tout ── */
+            <div className="v3-ecg-empty">
+              <span className="v3-ecg-empty-icon">📋</span>
+              <p>Aucun tracé ECG récent reçu.</p>
+              <Link to="/cardiologue/ecg-inbox" className="v3-link-blue" style={{ fontSize: "0.83rem" }}>
+                Accéder à la boîte ECG →
+              </Link>
+            </div>
+          ) : (
+            <div>
+              {/* ── Tracé SVG si disponible ── */}
+              {stats.dernierECG.signalData?.length > 10 ? (
+                <div className="v3-ecg-grid-container">
+                  <svg viewBox="0 0 800 120" className="v3-ecg-trace-svg">
+                    {/* ECG grid */}
+                    <defs>
+                      <pattern id="ecgGrid" width="40" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#fecaca" strokeWidth="0.4"/>
+                      </pattern>
+                      <pattern id="ecgGridLarge" width="200" height="100" patternUnits="userSpaceOnUse">
+                        <rect width="200" height="100" fill="url(#ecgGrid)"/>
+                        <path d="M 200 0 L 0 0 0 100" fill="none" stroke="#fca5a5" strokeWidth="0.8"/>
+                      </pattern>
+                    </defs>
+                    <rect width="800" height="120" fill="#fff5f5"/>
+                    <rect width="800" height="120" fill="url(#ecgGridLarge)"/>
+                    <polyline
+                      fill="none"
+                      stroke="#dc2626"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      points={stats.dernierECG.signalData
+                        .slice(0, 500)
+                        .map((val, i) =>
+                          `${(i / Math.min(stats.dernierECG.signalData.length - 1, 499)) * 800},${60 - val * 45}`
+                        )
+                        .join(" ")}
+                    />
+                  </svg>
+                </div>
+              ) : (
+                /* ── Pas de signal mais il y a un enregistrement ── */
+                <div className="v3-ecg-grid-container">
+                  <div className="v3-ecg-nosignal">
+                    <span>📡</span>
+                    <p>Signal ECG non disponible dans cet enregistrement</p>
+                  </div>
+                </div>
+              )}
+
+              {/* ── Infos IA ── */}
+              <div className="v3-ecg-ia-row">
+                {/* Score risque */}
+                {stats.dernierECG.iaInterpretations && (
+                  <div className="v3-ecg-score-block">
+                    <span className="v3-ecg-score-label">Score IA</span>
+                    <span
+                      className={`v3-ecg-score-val ${
+                        (stats.dernierECG.iaInterpretations.scoreRisque || 0) >= 70
+                          ? "v3-score--red"
+                          : (stats.dernierECG.iaInterpretations.scoreRisque || 0) >= 40
+                          ? "v3-score--orange"
+                          : "v3-score--green"
+                      }`}
+                    >
+                      {stats.dernierECG.iaInterpretations.scoreRisque ?? "—"}/100
+                    </span>
+                  </div>
+                )}
+
+                {/* Flags détectés */}
+                <div className="v3-ecg-flags">
+                  {stats.dernierECG.iaInterpretations?.arythmie && (
+                    <span className="v3-ecg-flag v3-flag--red">⚡ Arythmie</span>
+                  )}
+                  {stats.dernierECG.iaInterpretations?.fibrillationAuriculaire && (
+                    <span className="v3-ecg-flag v3-flag--red">🔴 Fibrillation A.</span>
+                  )}
+                  {stats.dernierECG.iaInterpretations?.tachycardie && (
+                    <span className="v3-ecg-flag v3-flag--orange">⚠️ Tachycardie</span>
+                  )}
+                  {stats.dernierECG.iaInterpretations?.bradycardie && (
+                    <span className="v3-ecg-flag v3-flag--orange">⚠️ Bradycardie</span>
+                  )}
+                  {stats.dernierECG.iaInterpretations?.anomalieST && (
+                    <span className="v3-ecg-flag v3-flag--orange">📉 Anomalie ST</span>
+                  )}
+                  {/* Si aucun flag détecté */}
+                  {stats.dernierECG.iaInterpretations &&
+                    !stats.dernierECG.iaInterpretations.arythmie &&
+                    !stats.dernierECG.iaInterpretations.fibrillationAuriculaire &&
+                    !stats.dernierECG.iaInterpretations.tachycardie &&
+                    !stats.dernierECG.iaInterpretations.bradycardie &&
+                    !stats.dernierECG.iaInterpretations.anomalieST && (
+                      <span className="v3-ecg-flag v3-flag--green">✅ Aucune anomalie détectée</span>
+                    )}
+                </div>
+
+                {/* Décision */}
+                <div style={{ marginLeft: "auto", flexShrink: 0 }}>
+                  <span
+                    className={`v3-ecg-decision v3-decision--${stats.dernierECG.decisionIA || "en_attente"}`}
+                  >
+                    {stats.dernierECG.decisionIA === "confirmé" && "✓ Confirmé"}
+                    {stats.dernierECG.decisionIA === "rejeté" && "✗ Rejeté"}
+                    {stats.dernierECG.decisionIA === "corrigé" && "✏️ Corrigé"}
+                    {(!stats.dernierECG.decisionIA || stats.dernierECG.decisionIA === "en_attente") &&
+                      "⏳ En attente de révision"}
+                  </span>
+                </div>
               </div>
-            )}
-          </div>
+
+              {/* Résumé IA */}
+              {stats.dernierECG.iaInterpretations?.resumeIA && (
+                <div className="v3-ecg-resume">
+                  <span className="v3-ecg-resume-label">🤖 Résumé IA :</span>
+                  <span className="v3-ecg-resume-text">
+                    {stats.dernierECG.iaInterpretations.resumeIA}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
+
       </div>
 
       {/* Right Panel: Alerts categorization */}
@@ -383,7 +508,8 @@ function CardiologueDashboard() {
                   <span className="v3-alert-detail">{a.detail}</span>
                   {a.patientId ? (
                     <Link
-                      to={`/cardiologue/patients/${a.patientId}`}
+                      to="/cardiologue/patients/fichepatient"
+                      onClick={() => handlePatientClick(a.patientId)}
                       className="v3-alert-link"
                     >
                       Voir la fiche de patient
@@ -421,7 +547,8 @@ function CardiologueDashboard() {
                   <span className="v3-alert-detail">{a.detail}</span>
                   {a.patientId ? (
                     <Link
-                      to={`/cardiologue/patients/${a.patientId}`}
+                      to="/cardiologue/patients/fichepatient"
+                      onClick={() => handlePatientClick(a.patientId)}
                       className="v3-alert-link"
                     >
                       Voir la fiche de patient
@@ -459,7 +586,8 @@ function CardiologueDashboard() {
                   <span className="v3-alert-detail">{a.detail}</span>
                   {a.patientId ? (
                     <Link
-                      to={`/cardiologue/patients/${a.patientId}`}
+                      to="/cardiologue/patients/fichepatient"
+                      onClick={() => handlePatientClick(a.patientId)}
                       className="v3-alert-link"
                     >
                       Voir la fiche de patient

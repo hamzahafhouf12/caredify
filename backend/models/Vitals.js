@@ -41,6 +41,11 @@ const vitalsSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // Body temperature in Celsius
+    temperature: {
+      type: Number,
+      default: null,
+    },
     // Source: 'manual', 'device', 'ia'
     source: {
       type: String,

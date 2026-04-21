@@ -72,6 +72,38 @@ const initSocket = (server) => {
       }
     });
 
+    // ─── WebRTC Signaling for Teleconsultation ───────────────────────────────
+    
+    // User requests a call
+    socket.on("call:request", (data) => {
+      console.log(`📞 Call Request from ${data.from} for room: ${data.roomId}`);
+      socket.to(data.roomId).emit("call:invite", {
+        from: data.from,
+        signalData: data.signalData, // Offer
+        fromName: data.fromName
+      });
+    });
+
+    // User responds to a call
+    socket.on("call:response", (data) => {
+      console.log(`✅ Call Response from room: ${data.roomId} (Accepted: ${data.accepted})`);
+      socket.to(data.roomId).emit("call:answered", {
+        accepted: data.accepted,
+        signalData: data.signalData // Answer
+      });
+    });
+
+    // Exchange ICE candidates
+    socket.on("call:ice-candidate", (data) => {
+      socket.to(data.roomId).emit("call:ice-candidate", data.candidate);
+    });
+
+    // End call
+    socket.on("call:end", (data) => {
+      console.log(`🏁 Call ended in room: ${data.roomId}`);
+      io.to(data.roomId).emit("call:terminated");
+    });
+
     socket.on("disconnect", () => {
       console.log("📡 User disconnected");
     });

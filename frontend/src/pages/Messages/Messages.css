@@ -683,3 +683,78 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* ─── Nouvelle Conversation Selector ─── */
+.msg-compose-selector {
+  position: absolute;
+  top: 120px;
+  left: 20px;
+  right: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  z-index: 100;
+  border: 1px solid #eee;
+  padding: 15px;
+  animation: slideIn 0.2s ease;
+}
+
+.cdash--dark .msg-compose-selector {
+  background: var(--dark-bg-card);
+  border-color: var(--dark-border);
+}
+
+.msg-compose-selector-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cdash--dark .msg-compose-selector-head {
+  color: var(--dark-text-primary);
+}
+
+.msg-compose-selector-head button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+}
+
+.msg-compose-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.msg-compose-item {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+}
+
+.cdash--dark .msg-compose-item {
+  color: var(--dark-text-primary);
+}
+
+.msg-compose-item:hover {
+  background: #f0f7ff;
+  color: #2563eb;
+}
+
+.cdash--dark .msg-compose-item:hover {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

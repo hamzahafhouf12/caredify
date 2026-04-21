@@ -1,0 +1,321 @@
+.tcons-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.tcons-container {
+  width: 90%;
+  height: 90%;
+  max-width: 1200px;
+  background: #1a1a1a;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🎥 Vidéo distante (Patient) */
+.tcons-remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+/* 👤 Vidéo locale (Médecin) - PiP */
+.tcons-local-video-wrap {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  width: 240px;
+  aspect-ratio: 16/9;
+  background: #333;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.tcons-local-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* Miroir pour l'auto-retour */
+}
+
+/* 🎮 Barre de contrôle */
+.tcons-controls {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  padding: 16px 32px;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tcons-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 24px;
+}
+
+.tcons-btn--mute {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.tcons-btn--mute.active {
+  background: #ef4444;
+}
+
+.tcons-btn--video {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.tcons-btn--video.active {
+  background: #ef4444;
+}
+
+.tcons-btn--end {
+  background: #ef4444;
+  color: white;
+  width: 72px; /* Un peu plus grand */
+}
+
+.tcons-btn:hover {
+  transform: scale(1.1);
+}
+
+/* 🏷️ Infos patient */
+.tcons-info {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  color: white;
+}
+
+.tcons-patient-name {
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.tcons-status {
+  font-size: 14px;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tcons-status::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.5; }
+  100% { transform: scale(0.9); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 📶 Overlay de chargement */
+.tcons-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 10;
+}
+
+.tcons-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ⚙️ Sélecteur de périphériques */
+.tcons-device-selector-wrap {
+  position: relative;
+}
+
+.tcons-btn--settings {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.tcons-device-dropdown {
+  position: absolute;
+  bottom: calc(100% + 15px);
+  right: 0;
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.2s ease;
+}
+
+.tcons-device-item {
+  padding: 10px 14px;
+  color: white;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tcons-device-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tcons-device-item.active {
+  background: rgba(37, 99, 235, 0.2);
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ⚠️ Error & Retry State */
+.tcons-error-state {
+  text-align: center;
+  max-width: 300px;
+  animation: fadeIn 0.3s ease;
+}
+
+.tcons-error-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.tcons-error-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.tcons-retry-btn, .tcons-demo-btn {
+  padding: 12px 24px;
+  border-radius: 30px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tcons-retry-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.tcons-retry-btn:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+}
+
+.tcons-demo-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tcons-demo-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tcons-demo-notice {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f59e0b;
+  color: black;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* 🎤 Indicateur de niveau audio (VU-meter) */
+.tcons-audio-meter-wrap {
+  width: 12px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tcons-audio-bar {
+  width: 100%;
+  transition: height 0.1s ease, background 0.2s ease;
+  min-height: 2px;
+}

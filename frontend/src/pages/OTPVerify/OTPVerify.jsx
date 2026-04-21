@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import caredifyLogo from "../../assets/Caredify-logo.png";
 import ThemeToggle from "../../components/ThemeToggle";
+import { apiPost } from "../../utils/api";
 import "./OTPVerify.css";
 
 function OTPVerify() {
@@ -20,7 +21,6 @@ function OTPVerify() {
   const cooldownRef = useRef(null);
 
   const inputs = useRef([]);
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   // Start 30s cooldown timer
   const startCooldown = () => {
@@ -57,11 +57,7 @@ function OTPVerify() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch(`${API_URL}/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await apiPost(`/auth/forgot-password`, { email });
       const data = await response.json();
       if (response.ok) {
         setResent(true);
@@ -119,11 +115,7 @@ function OTPVerify() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch(`${API_URL}/auth/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: code }),
-      });
+      const response = await apiPost(`/auth/verify-otp`, { email, otp: code });
       const data = await response.json();
       if (response.ok) {
         navigate("/reset-password", { state: { email, otp: code } });

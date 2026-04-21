@@ -705,3 +705,133 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   ECG CARD — IMPROVED STATES
+   ═══════════════════════════════════════════════════════════ */
+
+/* Etat vide — aucun ECG */
+.v3-ecg-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.v3-ecg-empty-icon  { font-size: 2rem; }
+.v3-ecg-empty p     { margin: 0; font-weight: 500; }
+
+/* Etat — ECG existant mais sans signal */
+.v3-ecg-nosignal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  height: 100%;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+.v3-ecg-nosignal span { font-size: 1.6rem; }
+.v3-ecg-nosignal p    { margin: 0; }
+
+/* Rangée infos IA sous le tracé */
+.v3-ecg-ia-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+.cdash--dark .v3-ecg-ia-row { border-color: var(--dark-border); }
+
+/* Score IA */
+.v3-ecg-score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.v3-ecg-score-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+.v3-ecg-score-val {
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.v3-score--red    { color: #ef4444; }
+.v3-score--orange { color: #f59e0b; }
+.v3-score--green  { color: #22c55e; }
+
+/* Flags */
+.v3-ecg-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex: 1;
+}
+.v3-ecg-flag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+.v3-flag--red    { background: #fef2f2; color: #ef4444; }
+.v3-flag--orange { background: #fffbeb; color: #f59e0b; }
+.v3-flag--green  { background: #f0fdf4; color: #22c55e; }
+
+/* Décision badge */
+.v3-ecg-decision {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+.v3-decision--en_attente { background: #f1f5f9; color: #64748b; }
+.v3-decision--confirmé   { background: #f0fdf4; color: #22c55e; }
+.v3-decision--rejeté     { background: #fef2f2; color: #ef4444; }
+.v3-decision--corrigé    { background: #fffbeb; color: #f59e0b; }
+.cdash--dark .v3-decision--en_attente { background: rgba(255,255,255,0.06); color: #94a3b8; }
+
+/* Résumé IA */
+.v3-ecg-resume {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  margin-top: 0.6rem;
+  padding: 0.65rem 0.9rem;
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--brand-primary);
+  font-size: 0.8rem;
+}
+.cdash--dark .v3-ecg-resume {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--brand-muted);
+}
+.v3-ecg-resume-label { font-weight: 700; color: var(--brand-primary); flex-shrink: 0; }
+.v3-ecg-resume-text  { color: var(--text-secondary); line-height: 1.5; }
+.cdash--dark .v3-ecg-resume-text { color: var(--dark-text-secondary); }
+
+/* Bouton icône (sans border visible) */
+.v3-btn-icon-link {
+  border: none;
+  background: #ef4444;
+  cursor: pointer;
+  font-family: inherit;
+}
+

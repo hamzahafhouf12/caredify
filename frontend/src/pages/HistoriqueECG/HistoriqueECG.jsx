@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import MedicalLayout from "../../components/layout/MedicalLayout";
 import { doctorInfo, navItems } from "../../constants/medical";
+import { apiGet, apiPut } from "../../utils/api";
+import { formatDate, formatTime } from "../../utils/date";
 import "./HistoriqueECG.css";
 
 // ─── Données cliniques ─────────────────────────────────────────────
@@ -144,16 +146,13 @@ function ECGCard({ ecg, onAnnotate }) {
           <div className="hx-icon-circle">❤️</div>
           <div className="hx-card-meta-text">
             <span className="hx-card-date">
-              {new Date(ecg.createdAt).toLocaleDateString("fr-FR", {
+              {formatDate(ecg.createdAt, "fr-FR", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
               })}{" "}
               à{" "}
-              {new Date(ecg.createdAt).toLocaleTimeString("fr-FR", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {formatTime(ecg.createdAt)}
             </span>
             <span className="hx-card-source">
               Source: {ecg.source || "Dispositif Wearable"}
@@ -347,8 +346,6 @@ export default function HistoriqueECG() {
     active: item.label === "Signaux Vitaux", // Maintien de l'état actif sur le parent
   }));
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-  const token = localStorage.getItem("caredify_token");
 
   const fetchECGs = async () => {
     setLoading(true);
@@ -356,11 +353,9 @@ export default function HistoriqueECG() {
     try {
       // Pour les tests sans backend, on utilise un setTimeout si pas connecté
       const url = patientId
-        ? `${API_URL}/ecg/patient/${patientId}`
-        : `${API_URL}/ecg/all`;
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        ? `/ecg/patient/${patientId}`
+        : `/ecg/all`;
+      const res = await apiGet(url);
       if (!res.ok) throw new Error("Erreur de chargement");
       const data = await res.json();
       setEcgs(Array.isArray(data) ? data : []);
@@ -381,14 +376,7 @@ export default function HistoriqueECG() {
 
   const handleAnnotate = async (ecgId, annotation) => {
     try {
-      const res = await fetch(`${API_URL}/ecg/${ecgId}/annotation`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ annotationMedecin: annotation }),
-      });
+      const res = await apiPut(`/ecg/${ecgId}/annotation`, { annotationMedecin: annotation });
       if (res.ok) {
         setEcgs((prev) =>
           prev.map((e) =>

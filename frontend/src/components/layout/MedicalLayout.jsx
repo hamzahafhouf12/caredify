@@ -4,7 +4,8 @@ import Topbar from "./Topbar";
 import AlertToastContainer from "../medical/AlertToast";
 import "./MedicalLayout.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { API_BASE_URL } from "../../constants/api";
+import { apiGet } from "../../utils/api";
 
 function MedicalLayout({ children, breadcrumb, navItems, doctorInfo: initialDoctorInfo }) {
   const [userProfile, setUserProfile] = useState(null);
@@ -25,15 +26,7 @@ function MedicalLayout({ children, breadcrumb, navItems, doctorInfo: initialDoct
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("caredify_token");
-        if (!token) return;
-
-        const res = await fetch(`${API_BASE_URL}/users/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        const res = await apiGet("/users/profile");
         if (res.ok) {
           const data = await res.json();
           setUserProfile(data);

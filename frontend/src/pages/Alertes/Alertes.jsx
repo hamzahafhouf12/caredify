@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import MedicalLayout from "../../components/layout/MedicalLayout";
 import { doctorInfo, navItems } from "../../constants/medical";
 import { getSocket } from "../../utils/socket";
+import { apiGet, apiPut } from "../../utils/api";
+import { formatDate } from "../../utils/date";
 import "./Alertes.css";
 
 // ─── Config de priorité → couleur ───────────────────────────────────────────
@@ -53,6 +55,10 @@ function AlertCard({
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
+  const handlePatientClick = (pid) => {
+    localStorage.setItem("activePatientId", pid);
+    navigate("/cardiologue/patients/fichepatient");
+  };
 
   const pConf = PRIORITY_CONFIG[alert.priorite] || PRIORITY_CONFIG.Normal;
   const sConf = STATUS_CONFIG[alert.statut] || STATUS_CONFIG.en_attente;
@@ -96,7 +102,7 @@ function AlertCard({
             className="alx-patient"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/cardiologue/patients/${alert.patient?._id}`);
+              handlePatientClick(alert.patient?._id);
             }}
           >
             <span className="alx-avatar">👤</span>
@@ -122,7 +128,7 @@ function AlertCard({
                 : "👨‍⚕️ Manuel"}
           </span>
           <span className="alx-date">
-            {new Date(alert.createdAt).toLocaleString("fr-FR", {
+            {formatDate(alert.createdAt, "fr-FR", {
               day: "2-digit",
               month: "short",
               hour: "2-digit",
@@ -238,7 +244,7 @@ function AlertCard({
           <button
             className="alx-btn alx-btn--fiche"
             onClick={() =>
-              navigate(`/cardiologue/patients/${alert.patient?._id}`)
+              handlePatientClick(alert.patient?._id)
             }
           >
             📄 Voir la fiche complète du patient
@@ -259,9 +265,6 @@ export default function Alertes() {
   const [searchText, setSearchText] = useState("");
   const [newAlertIds, setNewAlertIds] = useState(new Set());
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-  const token = localStorage.getItem("caredify_token");
-
   const themedNavItems = navItems.map((item) => ({
     ...item,
     active: item.label === "Alertes",
@@ -271,9 +274,7 @@ export default function Alertes() {
   const fetchAlerts = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/alerts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiGet(`/alerts`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       // Trier par priorité (Critique > A_surveiller > Normal) puis par date
@@ -289,7 +290,7 @@ export default function Alertes() {
     } finally {
       setLoading(false);
     }
-  }, [API_URL, token]);
+  }, []);
 
   useEffect(() => {
     fetchAlerts();
@@ -323,10 +324,7 @@ export default function Alertes() {
 
   // ── Actions ──
   const toggleLue = async (id) => {
-    const res = await fetch(`${API_URL}/alerts/${id}/trait`, {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await apiPut(`/alerts/${id}/trait`);
     if (res.ok)
       setAlertes((prev) =>
         prev.map((a) => (a._id === id ? { ...a, lue: !a.lue } : a)),
@@ -334,16 +332,9 @@ export default function Alertes() {
   };
 
   const saveAnnotation = async (id, text, statut) => {
-    const res = await fetch(`${API_URL}/alerts/${id}/annotation`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        annotationMedecin: text,
-        statut: statut || "validée",
-      }),
+    const res = await apiPut(`/alerts/${id}/annotation`, {
+      annotationMedecin: text,
+      statut: statut || "validée",
     });
     if (res.ok) {
       const updated = await res.json();
@@ -352,14 +343,7 @@ export default function Alertes() {
   };
 
   const changeStatut = async (id, annotation, statut) => {
-    const res = await fetch(`${API_URL}/alerts/${id}/annotation`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ annotationMedecin: annotation, statut }),
-    });
+    const res = await apiPut(`/alerts/${id}/annotation`, { annotationMedecin: annotation, statut });
     if (res.ok) {
       const updated = await res.json();
       setAlertes((prev) => prev.map((a) => (a._id === id ? updated : a)));

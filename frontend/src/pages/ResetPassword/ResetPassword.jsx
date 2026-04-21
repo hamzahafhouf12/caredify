@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import caredifyLogo from "../../assets/Caredify-logo.png";
 import ThemeToggle from "../../components/ThemeToggle";
+import { apiPost } from "../../utils/api";
 import "./ResetPassword.css";
 
 function ResetPassword() {
@@ -48,13 +49,7 @@ function ResetPassword() {
     setError("");
 
     try {
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${API_URL}/auth/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp, newPassword: password }),
-      });
+      const response = await apiPost(`/auth/reset-password`, { email, otp, newPassword: password });
 
       const data = await response.json();
 

@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import MedicalLayout from "../../components/layout/MedicalLayout";
 import { doctorInfo, navItems } from "../../constants/medical";
-import { getSocket, connectSocket, disconnectSocket } from "../../utils/socket";
+import { getSocket } from "../../utils/socket";
+import { apiGet } from "../../utils/api";
+import { formatDate, formatTime as formatTimeUtil } from "../../utils/date";
 import "./Messages.css";
+import TeleconsultModal from "../../components/medical/TeleconsultModal";
 
 export default function Messages() {
   const [conversations, setConversations] = useState([]);
@@ -11,6 +15,15 @@ export default function Messages() {
   const [newMessage, setNewMessage] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [allPatients, setAllPatients] = useState([]);
+  const [isComposeModalOpen, setIsComposeModalOpen] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handlePatientClick = (pid) => {
+    localStorage.setItem("activePatientId", pid);
+    navigate("/cardiologue/patients/fichepatient");
+  };
   const [searchQuery, setSearchQuery] = useState("");
 
   const chatBodyRef = useRef(null);
@@ -21,7 +34,6 @@ export default function Messages() {
     active: item.label === "Messages",
   }));
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
   // 1. Initial Load
   useEffect(() => {
@@ -37,9 +49,7 @@ export default function Messages() {
 
     const fetchConversations = async () => {
       try {
-        const response = await fetch(`${API_URL}/messages/conversations`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiGet(`/messages/conversations`);
         const data = await response.json();
         if (response.ok) setConversations(data);
       } catch (err) {
@@ -49,9 +59,21 @@ export default function Messages() {
       }
     };
 
+    const fetchAllPatients = async () => {
+      try {
+        const response = await apiGet("/patients");
+        if (response.ok) {
+          const data = await response.json();
+          setAllPatients(data);
+        }
+      } catch (err) {
+        console.error("Fetch patients error", err);
+      }
+    };
+
     fetchConversations();
-    connectSocket();
-    return () => disconnectSocket();
+    fetchAllPatients();
+    // Socket is a global singleton — no connect/disconnect needed here
   }, []);
 
   // 2. Fetch History & Join Room
@@ -59,14 +81,8 @@ export default function Messages() {
     if (!selectedPatient || !currentUser) return;
 
     const fetchHistory = async () => {
-      const token = localStorage.getItem("caredify_token");
       try {
-        const response = await fetch(
-          `${API_URL}/messages/${selectedPatient._id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const response = await apiGet(`/messages/${selectedPatient._id}`);
         const data = await response.json();
         if (response.ok) setMessages(data);
       } catch (err) {
@@ -80,9 +96,19 @@ export default function Messages() {
     socket.emit("join_room", roomId);
 
     const handleReceiveMessage = (msg) => {
-      if (msg.patient === selectedPatient._id) {
-        setMessages((prev) => [...prev, msg]);
-      }
+      // Ignore messages not for this conversation
+      if (msg.patient !== selectedPatient._id &&
+          msg.patient?._id !== selectedPatient._id) return;
+      // Ignore optimistic duplicates (messages we already added locally)
+      setMessages((prev) => {
+        const isDuplicate = prev.some((m) =>
+          !m._id?.startsWith('opt_') && m._id === msg._id
+        );
+        if (isDuplicate) return prev;
+        // Replace the optimistic message if it exists
+        const withoutOptimistic = prev.filter((m) => !m._id?.startsWith('opt_'));
+        return [...withoutOptimistic, msg];
+      });
     };
     socket.on("receive_message", handleReceiveMessage);
     return () => socket.off("receive_message", handleReceiveMessage);
@@ -99,6 +125,19 @@ export default function Messages() {
     if (!newMessage.trim() || !selectedPatient || !currentUser) return;
 
     const roomId = [currentUser.id, selectedPatient._id].sort().join("_");
+    const optimisticMsg = {
+      _id: `opt_${Date.now()}`,
+      expediteur: { _id: currentUser.id },
+      destinataire: selectedPatient._id,
+      patient: selectedPatient._id,
+      contenu: newMessage,
+      createdAt: new Date().toISOString(),
+      roomId,
+    };
+
+    // Add optimistically before server confirms
+    setMessages((prev) => [...prev, optimisticMsg]);
+
     const messageData = {
       expediteur: currentUser.id,
       destinataire: selectedPatient.medecin || selectedPatient._id,
@@ -141,10 +180,38 @@ export default function Messages() {
               <div className="msg-sidebar-icon">💬</div>
               <h2>Messagerie</h2>
             </div>
-            <button className="msg-compose-btn" title="Nouvelle conversation">
+            <button 
+              className="msg-compose-btn" 
+              title="Nouvelle conversation"
+              onClick={() => setIsComposeModalOpen(true)}
+            >
               ✏️
             </button>
           </div>
+
+          {/* New Conversation Selector */}
+          {isComposeModalOpen && (
+            <div className="msg-compose-selector">
+              <div className="msg-compose-selector-head">
+                <span>Démarrer une conversation</span>
+                <button onClick={() => setIsComposeModalOpen(false)}>×</button>
+              </div>
+              <div className="msg-compose-list">
+                {allPatients.map(p => (
+                  <div 
+                    key={p._id} 
+                    className="msg-compose-item"
+                    onClick={() => {
+                      setSelectedPatient(p);
+                      setIsComposeModalOpen(false);
+                    }}
+                  >
+                    👤 {p.nom} {p.prenom}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="msg-search-box">
             <span className="msg-search-icon">🔍</span>
@@ -239,12 +306,16 @@ export default function Messages() {
                     className="msg-action-btn"
                     title="Voir la fiche patient"
                     onClick={() =>
-                      (window.location.href = `/cardiologue/patients/${selectedPatient._id}`)
+                      handlePatientClick(selectedPatient._id)
                     }
                   >
                     📄
                   </button>
-                  <button className="msg-action-btn" title="Appel vidéo">
+                  <button 
+                    className="msg-action-btn" 
+                    title="Appel vidéo"
+                    onClick={() => setIsCallModalOpen(true)}
+                  >
                     📹
                   </button>
                   <button className="msg-action-btn" title="Plus d'options">
@@ -287,14 +358,11 @@ export default function Messages() {
                       {showDate && (
                         <div className="msg-date-separator">
                           <span>
-                            {new Date(msg.createdAt).toLocaleDateString(
-                              "fr-FR",
-                              {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                              },
-                            )}
+                            {formatDate(msg.createdAt, "fr-FR", {
+                              weekday: "long",
+                              day: "numeric",
+                              month: "long",
+                            })}
                           </span>
                         </div>
                       )}
@@ -310,10 +378,7 @@ export default function Messages() {
                           >
                             {msg.contenu}
                             <span className="msg-bubble-time">
-                              {new Date(msg.createdAt).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {formatTimeUtil(msg.createdAt)}
                             </span>
                           </div>
                         </div>
@@ -355,6 +420,16 @@ export default function Messages() {
           )}
         </div>
       </div>
+      {/* Modal de Téléconsultation */}
+      {selectedPatient && currentUser && (
+        <TeleconsultModal
+          isOpen={isCallModalOpen}
+          onClose={() => setIsCallModalOpen(false)}
+          patientName={`${selectedPatient.nom} ${selectedPatient.prenom}`}
+          roomId={[currentUser.id, selectedPatient._id].sort().join("_")}
+          currentUser={currentUser}
+        />
+      )}
     </MedicalLayout>
   );
 }

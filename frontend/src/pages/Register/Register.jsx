@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "../../components/auth/AuthLayout";
 import { ROLES } from "../../constants/roles";
+import { apiPost } from "../../utils/api";
 import "./Register.css";
 
 function Register() {
@@ -52,18 +53,12 @@ function Register() {
     setLoading(true);
 
     try {
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nom: form.nom,
-          prenom: form.prenom,
-          email: form.email,
-          password: form.password,
-          role: form.role,
-        }),
+      const response = await apiPost(`/auth/register`, {
+        nom: form.nom,
+        prenom: form.prenom,
+        email: form.email,
+        password: form.password,
+        role: form.role,
       });
 
       const text = await response.text();

@@ -2,33 +2,213 @@ import React, { useState, useEffect, useRef } from "react";
 import MedicalLayout from "../../components/layout/MedicalLayout";
 import { doctorInfo, navItems } from "../../constants/medical";
 import ChangePasswordModal from "../../components/modals/ChangePasswordModal/ChangePasswordModal";
+import { apiGet, apiFetch, apiPost } from "../../utils/api";
+import { API_BASE_URL } from "../../constants/api";
 import "./Profile.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+/* ─── Modal Édition Profil ─────────────────────────────────────────── */
+function EditProfileModal({ isOpen, onClose, profile, onSaved }) {
+  const [form, setForm] = useState({
+    nom: profile?.nom || "",
+    prenom: profile?.prenom || "",
+    specialite: profile?.specialite || "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (profile) {
+      setForm({
+        nom: profile.nom || "",
+        prenom: profile.prenom || "",
+        specialite: profile.specialite || "",
+      });
+    }
+  }, [profile]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      const formData = new FormData();
+      formData.append("nom", form.nom);
+      formData.append("prenom", form.prenom);
+      formData.append("specialite", form.specialite);
+
+      const res = await apiFetch("/users/profile", {
+        method: "PUT",
+        body: formData,
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        onSaved(updated);
+        onClose();
+      } else {
+        const data = await res.json();
+        setError(data.message || "Erreur lors de la mise à jour");
+      }
+    } catch (err) {
+      setError("Une erreur est survenue.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal-box"
+        onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: 480 }}
+      >
+        <div className="modal-header">
+          <h3>✏️ Éditer le profil</h3>
+          <button className="modal-close-btn" onClick={onClose}>
+            ×
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} style={{ padding: "1.5rem" }}>
+          {error && (
+            <p style={{ color: "#ef4444", marginBottom: "1rem", fontSize: "0.9rem" }}>
+              {error}
+            </p>
+          )}
+          <div style={{ marginBottom: "1rem" }}>
+            <label style={{ display: "block", marginBottom: 6, fontWeight: 600, fontSize: "0.85rem", color: "#64748b" }}>
+              Prénom
+            </label>
+            <input
+              type="text"
+              value={form.prenom}
+              onChange={(e) => setForm((f) => ({ ...f, prenom: e.target.value }))}
+              required
+              style={{
+                width: "100%",
+                padding: "0.6rem 0.9rem",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: "0.95rem",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: "1rem" }}>
+            <label style={{ display: "block", marginBottom: 6, fontWeight: 600, fontSize: "0.85rem", color: "#64748b" }}>
+              Nom
+            </label>
+            <input
+              type="text"
+              value={form.nom}
+              onChange={(e) => setForm((f) => ({ ...f, nom: e.target.value }))}
+              required
+              style={{
+                width: "100%",
+                padding: "0.6rem 0.9rem",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: "0.95rem",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+          <div style={{ marginBottom: "1.5rem" }}>
+            <label style={{ display: "block", marginBottom: 6, fontWeight: 600, fontSize: "0.85rem", color: "#64748b" }}>
+              Spécialité
+            </label>
+            <input
+              type="text"
+              value={form.specialite}
+              onChange={(e) => setForm((f) => ({ ...f, specialite: e.target.value }))}
+              placeholder="ex: Cardiologue interventionnel"
+              style={{
+                width: "100%",
+                padding: "0.6rem 0.9rem",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: 8,
+                fontSize: "0.95rem",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                padding: "0.6rem 1.2rem",
+                borderRadius: 8,
+                border: "1.5px solid #e2e8f0",
+                background: "white",
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              style={{
+                padding: "0.6rem 1.4rem",
+                borderRadius: 8,
+                border: "none",
+                background: saving ? "#94a3b8" : "#2563eb",
+                color: "white",
+                cursor: saving ? "not-allowed" : "pointer",
+                fontWeight: 600,
+              }}
+            >
+              {saving ? "Sauvegarde..." : "💾 Sauvegarder"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Page Principale Profil ────────────────────────────────────────── */
 export default function Profile() {
   const [isPwdModalOpen, setIsPwdModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("info");
   const [isUploading, setIsUploading] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
+  const [dashStats, setDashStats] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchProfile();
+    fetchDashStats();
   }, []);
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem("caredify_token");
-      const res = await fetch(`${API_BASE_URL}/users/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiGet(`/users/profile`);
       if (res.ok) {
         const data = await res.json();
         setUserProfile(data);
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
+    }
+  };
+
+  const fetchDashStats = async () => {
+    try {
+      const res = await apiGet("/dashboard/stats");
+      if (res.ok) {
+        const data = await res.json();
+        setDashStats(data);
+      }
+    } catch (err) {
+      console.error("Error fetching dashboard stats:", err);
     }
   };
 
@@ -45,19 +225,14 @@ export default function Profile() {
 
     setIsUploading(true);
     try {
-      const token = localStorage.getItem("caredify_token");
-      const res = await fetch(`${API_BASE_URL}/users/profile`, {
+      const res = await apiFetch(`/users/profile`, {
         method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
       if (res.ok) {
         const updatedUser = await res.json();
         setUserProfile(updatedUser);
-        // Force refresh MedicalLayout/Sidebar if needed, but since it's a separate fetch,
-        // ideally we would use a context. For now, a window refresh or global event could work.
-        // Let's just refresh the page to be sure everything (Sidebar, etc) is in sync.
         window.location.reload();
       } else {
         alert("Erreur lors du téléchargement de l'image");
@@ -81,31 +256,45 @@ export default function Profile() {
         nom: userProfile.nom,
         prenom: userProfile.prenom,
       }
-    : { ...doctorInfo, email: "kilani.chaoua@caredify.tn" };
+    : { ...doctorInfo, email: "" };
 
   const themedNavItems = navItems.map((item) => ({
     ...item,
     active: item.label === "Profile",
   }));
 
+  // Stats réelles depuis le dashboard
   const stats = [
-    { icon: "👥", label: "Patients suivis", value: "12" },
-    { icon: "❤️", label: "ECG analysés", value: "48" },
-    { icon: "⚡", label: "Alertes traitées", value: "7" },
-    { icon: "📅", label: "Années d'expérience", value: "14" },
+    {
+      icon: "👥",
+      label: "Patients suivis",
+      value: dashStats ? String(dashStats.totalPatients) : "—",
+    },
+    {
+      icon: "❤️",
+      label: "Alertes urgentes",
+      value: dashStats ? String(dashStats.urgentesCount) : "—",
+    },
+    {
+      icon: "💬",
+      label: "Messages non lus",
+      value: dashStats ? String(dashStats.unreadMessagesCount) : "—",
+    },
+    {
+      icon: "📅",
+      label: "Spécialité",
+      value: currentDoctor.specialty,
+    },
   ];
 
   const infoRows = [
     { label: "Nom complet", value: currentDoctor.name, icon: "👤" },
     {
       label: "Email professionnel",
-      value: currentDoctor.email,
+      value: currentDoctor.email || "—",
       icon: "📧",
     },
-    { label: "Date de naissance", value: "19/02/1988", icon: "🎂" },
     { label: "Spécialité", value: currentDoctor.specialty, icon: "🫀" },
-    { label: "Établissement", value: "Hôpital La Rabta, Tunis", icon: "🏥" },
-    { label: "Téléphone", value: "+216 71 566 200", icon: "📞" },
   ];
 
   return (
@@ -124,7 +313,11 @@ export default function Profile() {
 
           {/* Avatar + Name Row */}
           <div className="profile-identity">
-            <div className="profile-avatar-wrap" onClick={handleAvatarClick} style={{ cursor: 'pointer' }}>
+            <div
+              className="profile-avatar-wrap"
+              onClick={handleAvatarClick}
+              style={{ cursor: "pointer" }}
+            >
               <div className="profile-avatar-ring">
                 {currentDoctor.avatar ? (
                   <img
@@ -136,7 +329,9 @@ export default function Profile() {
                 ) : (
                   <div className="profile-avatar-emoji">👨‍⚕️</div>
                 )}
-                {isUploading && <div className="profile-avatar-loader">...</div>}
+                {isUploading && (
+                  <div className="profile-avatar-loader">...</div>
+                )}
                 <div className="profile-avatar-overlay">
                   <span>📸 Modifier</span>
                 </div>
@@ -147,7 +342,7 @@ export default function Profile() {
               <input
                 type="file"
                 ref={fileInputRef}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 accept="image/*"
                 onChange={handleFileChange}
               />
@@ -159,10 +354,7 @@ export default function Profile() {
                 <span className="profile-tag profile-tag--blue">
                   🫀 Cardiologue
                 </span>
-                <span className="profile-tag profile-tag--green">
-                  ✓ Vérifié
-                </span>
-                <span className="profile-tag profile-tag--gray">ID: #1234</span>
+                <span className="profile-tag profile-tag--green">✓ Vérifié</span>
               </div>
             </div>
 
@@ -173,7 +365,10 @@ export default function Profile() {
               >
                 🔒 Modifier le mot de passe
               </button>
-              <button className="profile-btn-secondary">
+              <button
+                className="profile-btn-secondary"
+                onClick={() => setIsEditModalOpen(true)}
+              >
                 ✏️ Éditer le profil
               </button>
             </div>
@@ -251,8 +446,8 @@ export default function Profile() {
                 <div className="profile-sec-content">
                   <h4>Mot de passe</h4>
                   <p>
-                    Dernière modification il y a 30 jours. Recommandé : tous les
-                    90 jours.
+                    Modifiez régulièrement votre mot de passe pour sécuriser
+                    votre compte.
                   </p>
                 </div>
                 <button
@@ -280,47 +475,63 @@ export default function Profile() {
           {/* Activity Tab */}
           {activeTab === "activity" && (
             <div className="profile-activity-section">
-              {[
-                {
-                  action: "Consultation ECG",
-                  patient: "Test Patient",
-                  time: "Aujourd'hui 14:32",
-                  icon: "📈",
-                },
-                {
-                  action: "Alerte validée",
-                  patient: "Test Patient",
-                  time: "Aujourd'hui 11:15",
-                  icon: "✅",
-                },
-                {
-                  action: "Rapport PDF généré",
-                  patient: "Test Patient",
-                  time: "Hier 16:48",
-                  icon: "📄",
-                },
-                {
-                  action: "Connexion au système",
-                  patient: "—",
-                  time: "Hier 08:00",
-                  icon: "🔐",
-                },
-              ].map((act, i) => (
-                <div key={i} className="profile-activity-item">
-                  <div className="profile-activity-icon">{act.icon}</div>
-                  <div className="profile-activity-content">
-                    <span className="profile-activity-action">
-                      {act.action}
-                    </span>
-                    <span className="profile-activity-patient">
-                      {act.patient !== "—"
-                        ? `Patient : ${act.patient}`
-                        : act.patient}
-                    </span>
+              {dashStats ? (
+                <>
+                  <div className="profile-activity-item">
+                    <div className="profile-activity-icon">👥</div>
+                    <div className="profile-activity-content">
+                      <span className="profile-activity-action">
+                        Patients suivis actuellement
+                      </span>
+                      <span className="profile-activity-patient">
+                        {dashStats.totalPatients} patient(s) actif(s)
+                      </span>
+                    </div>
                   </div>
-                  <span className="profile-activity-time">{act.time}</span>
-                </div>
-              ))}
+                  <div className="profile-activity-item">
+                    <div className="profile-activity-icon">⚠️</div>
+                    <div className="profile-activity-content">
+                      <span className="profile-activity-action">
+                        Alertes urgentes en attente
+                      </span>
+                      <span className="profile-activity-patient">
+                        {dashStats.urgentesCount} alerte(s) urgente(s)
+                      </span>
+                    </div>
+                  </div>
+                  <div className="profile-activity-item">
+                    <div className="profile-activity-icon">💬</div>
+                    <div className="profile-activity-content">
+                      <span className="profile-activity-action">
+                        Messages non lus
+                      </span>
+                      <span className="profile-activity-patient">
+                        {dashStats.unreadMessagesCount} message(s) non lu(s)
+                      </span>
+                    </div>
+                  </div>
+                  {dashStats.dernierECG && (
+                    <div className="profile-activity-item">
+                      <div className="profile-activity-icon">📈</div>
+                      <div className="profile-activity-content">
+                        <span className="profile-activity-action">
+                          Dernier ECG reçu
+                        </span>
+                        <span className="profile-activity-patient">
+                          Patient :{" "}
+                          {dashStats.dernierECG.patient?.nom ||
+                            "Inconnu"}{" "}
+                          {dashStats.dernierECG.patient?.prenom || ""}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p style={{ color: "#94a3b8", padding: "1rem" }}>
+                  Chargement de l'activité...
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -329,6 +540,15 @@ export default function Profile() {
       <ChangePasswordModal
         isOpen={isPwdModalOpen}
         onClose={() => setIsPwdModalOpen(false)}
+      />
+
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        profile={userProfile}
+        onSaved={(updated) => {
+          setUserProfile(updated);
+        }}
       />
     </MedicalLayout>
   );

@@ -1,18 +1,22 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+
 import { useParams, useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import MedicalLayout from "../../components/layout/MedicalLayout";
 import { doctorInfo, navItems } from "../../constants/medical";
 import InteractiveECG from "../../components/medical/InteractiveECG";
-import AIInsightsCard from "../../components/medical/AIInsightsCard";
+import AIInsightsCard, { CLINICAL_DATA } from "../../components/medical/AIInsightsCard";
 import PatientTrends from "../../components/medical/PatientTrends";
 import PatientMedicalModal from "../../components/medical/PatientMedicalModal";
 import PrescriptionModal from "../../components/modals/PrescriptionModal";
+import VitauxModal from "../../components/medical/VitauxModal";
 import { getSocket } from "../../utils/socket";
+import { API_BASE_URL } from "../../constants/api";
+import { apiGet, apiPost, apiPut } from "../../utils/api";
+import { formatDate, formatDateTime } from "../../utils/date";
 import "./PatientFiche.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 function MiniGraph({ points, color = "#2f80ed" }) {
   return (
@@ -29,54 +33,11 @@ function MiniGraph({ points, color = "#2f80ed" }) {
   );
 }
 
-function ECGWaveformFull({ points }) {
-  if (!points || points.length === 0) {
-    return (
-      <svg
-        viewBox="0 0 1000 150"
-        className="fiche-ecg-svg"
-        preserveAspectRatio="none"
-      >
-        <text
-          x="50%"
-          y="50%"
-          dominantBaseline="middle"
-          textAnchor="middle"
-          fill="#888"
-        >
-          Aucun tracé ECG disponible
-        </text>
-      </svg>
-    );
-  }
-  const svgPoints = points
-    .map((val, i) => {
-      const x = (i / (points.length - 1)) * 1000;
-      const y = 75 - val * 50;
-      return `${x},${y}`;
-    })
-    .join(" ");
 
-  return (
-    <svg
-      viewBox="0 0 1000 150"
-      className="fiche-ecg-svg"
-      preserveAspectRatio="none"
-    >
-      <polyline
-        fill="none"
-        stroke="#2f80ed"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        points={svgPoints}
-      />
-    </svg>
-  );
-}
 
 function PatientFiche() {
-  const { id } = useParams();
+  // On utilise localStorage au lieu de useParams pour garder une URL propre (/fichepatient)
+  const id = localStorage.getItem("activePatientId");
   const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -88,10 +49,12 @@ function PatientFiche() {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [isMedicalModalOpen, setIsMedicalModalOpen] = useState(false);
   const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
+  const [isVitauxModalOpen, setIsVitauxModalOpen] = useState(false);
   const [prescriptions, setPrescriptions] = useState([]);
   const [loadingPrescripts, setLoadingPrescripts] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const reportRef = useRef(null);
+  const pdfRef = useRef(null);
 
   // États pour le live ECG
   const [isLive, setIsLive] = useState(false);
@@ -100,68 +63,77 @@ function PatientFiche() {
   const liveBufferRef = useRef([]);
   const annotBufferRef = useRef([]);
 
-  const fetchPatient = async () => {
+  const fetchPatient = useCallback(async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("caredify_token");
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${API_URL}/patients/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      setError("");
+      const response = await apiGet(`/patients/${id}`);
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
       setPatient(data);
-    } catch (err) {
+    } catch {
       setError("Erreur lors du chargement des informations du patient");
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  const fetchHistory = async (days = 30) => {
+  const fetchHistory = useCallback(async (days = 30) => {
     try {
       setLoadingHistory(true);
-      const token = localStorage.getItem("caredify_token");
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${API_URL}/patients/${id}/full-history?days=${days}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (response.ok) setHistoryData(data);
-    } catch (err) {
-      console.error("Erreur historique:", err);
+      const response = await apiGet(`/patients/${id}/full-history?days=${days}`);
+      if (response.ok) {
+        const data = await response.json();
+        setHistoryData(data);
+      }
+    } catch {
+      console.error("Erreur historique");
     } finally {
       setLoadingHistory(false);
     }
-  };
-
-  useEffect(() => {
-    fetchPatient();
   }, [id]);
 
-  useEffect(() => {
-    if (activeTab === "history") fetchHistory(historyPeriod);
-    if (activeTab === "prescriptions") fetchPrescriptions();
-  }, [activeTab, historyPeriod]);
-
-  const fetchPrescriptions = async () => {
+  const fetchPrescriptions = useCallback(async () => {
     try {
       setLoadingPrescripts(true);
-      const token = localStorage.getItem("caredify_token");
-      const res = await fetch(`${API_BASE_URL}/prescriptions/patient/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiGet(`/prescriptions/patient/${id}`);
       if (res.ok) {
         const data = await res.json();
         setPrescriptions(data);
       }
-    } catch (err) {
-      console.error("Fetch prescriptions error:", err);
+    } catch {
+      console.error("Fetch prescriptions error");
     } finally {
       setLoadingPrescripts(false);
     }
-  };
+  }, [id]);
+
+
+  useEffect(() => {
+    if (!id) {
+      navigate("/cardiologue/patients");
+      return;
+    }
+    fetchPatient();
+  }, [id, fetchPatient, navigate]);
+
+  useEffect(() => {
+    if (activeTab === "history") fetchHistory(historyPeriod);
+    if (activeTab === "prescriptions") fetchPrescriptions();
+  }, [activeTab, historyPeriod, fetchHistory, fetchPrescriptions]);
+
+  // Support de l'auto-ouverture du modal d'édition via query param ?edit=true
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("edit") === "true") {
+      setIsMedicalModalOpen(true);
+      // Nettoyer l'URL (optionnel)
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
+
+
+
 
   // Gestion du Socket pour le Live ECG
   useEffect(() => {
@@ -206,20 +178,7 @@ function PatientFiche() {
     if (!patient?.lastEcg?._id) return;
     setReviewLoading(true);
     try {
-      const token = localStorage.getItem("caredify_token");
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(
-        `${API_URL}/ecg/${patient.lastEcg._id}/review`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ decisionIA: decision }),
-        },
-      );
+      const response = await apiPut(`/ecg/${patient.lastEcg._id}/review`, { decisionIA: decision });
       if (response.ok) await fetchPatient();
     } catch (err) {
       console.error("Review error:", err);
@@ -230,17 +189,7 @@ function PatientFiche() {
 
   const handleSaveMedicalProfile = async (medicalData) => {
     try {
-      const token = localStorage.getItem("caredify_token");
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(`${API_URL}/patients/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(medicalData),
-      });
+      const response = await apiPut(`/patients/${id}`, medicalData);
       if (response.ok) {
         await fetchPatient();
         setIsMedicalModalOpen(false);
@@ -257,20 +206,7 @@ function PatientFiche() {
     if (!patient?.lastEcg?._id) return;
     setReviewLoading(true);
     try {
-      const token = localStorage.getItem("caredify_token");
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(
-        `${API_URL}/ecg/${patient.lastEcg._id}/annotation`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ annotationMedecin: text }),
-        },
-      );
+      const response = await apiPut(`/ecg/${patient.lastEcg._id}/annotation`, { annotationMedecin: text });
       if (response.ok) await fetchPatient();
     } catch (err) {
       console.error("Annotation save error:", err);
@@ -282,20 +218,7 @@ function PatientFiche() {
   const handleAddTemporalAnnotation = async (annotationData) => {
     if (!patient?.lastEcg?._id) return;
     try {
-      const token = localStorage.getItem("caredify_token");
-      const API_URL =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-      const response = await fetch(
-        `${API_URL}/ecg/${patient.lastEcg._id}/annotations_temp`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(annotationData),
-        },
-      );
+      const response = await apiPut(`/ecg/${patient.lastEcg._id}/annotations_temp`, annotationData);
       if (response.ok) await fetchPatient();
     } catch (err) {
       console.error("Temporal Annotation save error:", err);
@@ -304,90 +227,59 @@ function PatientFiche() {
 
   const handleSavePrescription = async (prescData) => {
     try {
-      const token = localStorage.getItem("caredify_token");
-      const res = await fetch(`${API_BASE_URL}/prescriptions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          patientId: id,
-          medicaments: prescData.medicaments,
-          notes: prescData.notes,
-          ecgRecord: patient.lastEcg?._id,
-        }),
+      const res = await apiPost(`/prescriptions`, {
+        patientId: id,
+        medicaments: prescData.medicaments,
+        notes: prescData.notes,
+        ecgRecord: patient.lastEcg?._id,
       });
 
       if (res.ok) {
         await fetchPrescriptions();
         setIsPrescriptionModalOpen(false);
       }
-    } catch (err) {
-      console.error("Save prescription error:", err);
+    } catch {
+      console.error("Save prescription error");
     }
   };
+
 
   const handleExportPrescription = (prescId, format) => {
     const token = localStorage.getItem("caredify_token");
     window.open(`${API_BASE_URL}/prescriptions/${prescId}/export/${format}?token=${token}`, "_blank");
   };
 
-  const handleExportPDF = async () => {
-    if (!reportRef.current) return;
+  const handleExportPDF = () => {
+    if (!patient) return;
     setIsExportingPDF(true);
 
-    // Attendre que le re-render applique la classe .pdf-mode
     setTimeout(async () => {
       try {
-        const canvas = await html2canvas(reportRef.current, {
-          scale: 2, // Haute définition
+        const element = pdfRef.current;
+        const canvas = await html2canvas(element, {
+          scale: 3, // Ultra haute définition pour les courbes
           useCORS: true,
           logging: false,
+          backgroundColor: "#ffffff",
         });
 
-        const imgWidth = 210; // A4 dimension in mm
-        const pageHeight = 297;
+        const imgData = canvas.toDataURL("image/jpeg", 1.0);
+        const pdf = new jsPDF("p", "mm", "a4");
+        
+        const imgWidth = 210;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-
-        const doc = new jsPDF("p", "mm", "a4");
-        let position = 0;
-
-        doc.addImage(
-          canvas.toDataURL("image/jpeg", 1.0),
-          "JPEG",
-          0,
-          position,
-          imgWidth,
-          imgHeight,
-        );
-        heightLeft -= pageHeight;
-
-        // Ajouter pages supp. si fiche trop longue
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight;
-          doc.addPage();
-          doc.addImage(
-            canvas.toDataURL("image/jpeg", 1.0),
-            "JPEG",
-            0,
-            position,
-            imgWidth,
-            imgHeight,
-          );
-          heightLeft -= pageHeight;
-        }
-
-        doc.save(
-          `DMP_${patient.nom.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0, 10)}.pdf`,
+        
+        pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight);
+        
+        pdf.save(
+          `RAPPORT_ECG_${patient.nom.replace(/\s+/g, "_")}_${new Date().toISOString().slice(0, 10)}.pdf`,
         );
       } catch (err) {
         console.error("Erreur PDF:", err);
       } finally {
         setIsExportingPDF(false);
       }
-    }, 100);
+    }, 200);
   };
 
   const themedNavItems = navItems.map((item) => ({
@@ -395,13 +287,24 @@ function PatientFiche() {
     active: item.label === "Patients",
   }));
 
-  if (loading) {
-    return (
-      <MedicalLayout
-        breadcrumb="Patients / Fiche Patient"
-        navItems={themedNavItems}
-        doctorInfo={doctorInfo}
-      >
+  return (
+    <MedicalLayout
+      breadcrumb="Patients / Fiche Patient"
+      navItems={themedNavItems}
+      doctorInfo={doctorInfo}
+    >
+      {error ? (
+        <div className="cdash-center" style={{ textAlign: "center", padding: "100px 0" }}>
+          <h2 style={{ color: "#e53e3e", marginBottom: "1rem" }}>⚠️ Oups !</h2>
+          <p style={{ color: "#4a5568", marginBottom: "2rem" }}>{error}</p>
+          <button
+            className="patients-btn-action-blue"
+            onClick={() => fetchPatient()}
+          >
+            Réessayer
+          </button>
+        </div>
+      ) : loading ? (
         <div
           className="cdash-center"
           style={{
@@ -413,18 +316,10 @@ function PatientFiche() {
         >
           <h2>Chargement...</h2>
         </div>
-      </MedicalLayout>
-    );
-  }
-
-  return (
-    <MedicalLayout
-      breadcrumb="Patients / Fiche Patient"
-      navItems={themedNavItems}
-      doctorInfo={doctorInfo}
-    >
-      <div
-        ref={reportRef}
+      ) : patient && (
+        <>
+          <div
+            ref={reportRef}
         className={`cdash-center fiche-container ${isExportingPDF ? "pdf-mode" : ""}`}
         style={{
           background: "transparent",
@@ -560,7 +455,7 @@ function PatientFiche() {
               <div className="fiche-info-item">
                 <span className="fiche-info-label">Dossier</span>
                 <span className="fiche-info-value">
-                  le {new Date(patient.createdAt).toLocaleDateString()}
+                  le {formatDate(patient.createdAt)}
                 </span>
               </div>
             </div>
@@ -589,68 +484,52 @@ function PatientFiche() {
           </button>
         </div>
 
-        {activeTab === "current" ? (
+        {activeTab === "current" && (
+
           <>
-            {/* Vital Data Section */}
             <div className="fiche-section">
-              <h2 className="fiche-section-title">Données Vitales</h2>
-              <div className="fiche-vitals-grid">
-                <div className="cdash-card fiche-vital-card">
-                  <div className="fiche-vital-card__head">
-                    <p className="fiche-vital-card__label">
-                      Frequence Cardiaque :{" "}
-                      {patient.lastVitals?.frequenceCardiaque || "--"} bpm
-                    </p>
-                  </div>
-                  <MiniGraph
-                    points={patient.vitalsHistory
-                      ?.map(
-                        (v, i) =>
-                          `${i * 5},${40 - (v.frequenceCardiaque / 150) * 40}`,
-                      )
-                      .join(" ")}
-                  />
-                </div>
-                <div className="cdash-card fiche-vital-card">
-                  <div className="fiche-vital-card__head">
-                    <p className="fiche-vital-card__label">
-                      Temperature : {patient.lastVitals?.temperature || "--"} °C
-                    </p>
-                  </div>
-                  <MiniGraph
-                    points={patient.vitalsHistory
-                      ?.map(
-                        (v, i) =>
-                          `${i * 5},${40 - ((v.temperature - 30) / 10) * 40}`,
-                      )
-                      .join(" ")}
-                  />
-                </div>
-                <div className="cdash-card fiche-vital-card">
-                  <div className="fiche-vital-card__head">
-                    <p className="fiche-vital-card__label">
-                      SPO₂ : {patient.lastVitals?.spo2 || "--"}%
-                    </p>
-                  </div>
-                  <MiniGraph
-                    points={patient.vitalsHistory
-                      ?.map((v, i) => `${i * 5},${40 - (v.spo2 / 100) * 40}`)
-                      .join(" ")}
-                  />
-                </div>
-                <div className="cdash-card fiche-vital-card">
-                  <div className="fiche-vital-card__head">
-                    <p className="fiche-vital-card__label">
-                      HRV : {patient.lastVitals?.hrv || "--"} ms
-                    </p>
-                  </div>
-                  <MiniGraph
-                    points={patient.vitalsHistory
-                      ?.map((v, i) => `${i * 5},${40 - (v.hrv / 200) * 40}`)
-                      .join(" ")}
-                  />
-                </div>
+              <div className="fiche-section-header" style={{marginBottom:'1rem'}}>
+                <h2 className="fiche-section-title" style={{marginBottom:0}}>Données Vitales</h2>
+                {!patient.lastVitals && (
+                  <button
+                    className="patients-btn-action-blue"
+                    style={{fontSize:'0.8rem', padding:'6px 14px'}}
+                    onClick={() => setIsVitauxModalOpen(true)}
+                    title="Saisir les signes vitaux de ce patient"
+                  >
+                    ➕ Saisir les vitaux
+                  </button>
+                )}
               </div>
+              {!patient.lastVitals ? (
+                <div className="fiche-empty-state" style={{padding:'1.5rem'}}>
+                  <span style={{fontSize:'2rem',display:'block',marginBottom:'0.5rem'}}>📊</span>
+                  <p style={{color:'#64748b',margin:0}}>Aucun signe vital enregistré pour ce patient.</p>
+                  <p style={{color:'#94a3b8',fontSize:'0.8rem',marginTop:'0.3rem'}}>Les données apparaîtront ici dès qu'un appareil transmettra des mesures.</p>
+                </div>
+              ) : (
+              <div className="fiche-vitals-grid">
+                {[
+                  { label: "Frequence Cardiaque", val: patient.lastVitals?.frequenceCardiaque, unit: "bpm", scale: 150, key: "frequenceCardiaque" },
+                  { label: "Temperature", val: patient.lastVitals?.temperature, unit: "°C", scale: 10, offset: 30, key: "temperature" },
+                  { label: "SPO₂", val: patient.lastVitals?.spo2, unit: "%", scale: 100, key: "spo2" },
+                  { label: "HRV", val: patient.lastVitals?.hrv, unit: "ms", scale: 200, key: "hrv" }
+                ].map((vital, idx) => (
+                  <div key={idx} className="cdash-card fiche-vital-card">
+                    <div className="fiche-vital-card__head">
+                      <p className="fiche-vital-card__label">
+                        {vital.label} : <strong style={{color: vital.val ? '#2563eb' : '#94a3b8'}}>{vital.val ?? '--'}</strong> {vital.unit}
+                      </p>
+                    </div>
+                    <MiniGraph
+                      points={[...patient.vitalsHistory].reverse().map((v, i) =>
+                        `${i * 5},${40 - ((v[vital.key] - (vital.offset || 0)) / vital.scale) * 40}`
+                      ).join(" ")}
+                    />
+                  </div>
+                ))}
+              </div>
+              )}
             </div>
 
             {/* ECG Section */}
@@ -658,40 +537,49 @@ function PatientFiche() {
               <div className="cdash-card fiche-ecg-card">
                 <div className="fiche-ecg-card__content">
                   <div className="fiche-ecg-card__left">
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-end",
-                        marginBottom: "15px",
-                      }}
-                    >
-                      <h2
-                        className="fiche-section-title"
-                        style={{ marginBottom: 0 }}
-                      >
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:"15px" }}>
+                      <h2 className="fiche-section-title" style={{ marginBottom: 0 }}>
                         Analyse ECG Interactive
+                        {!patient.lastEcg && (
+                          <span style={{fontSize:'0.75rem', fontWeight:500, color:'#94a3b8', marginLeft:'10px'}}>
+                            — Aucun ECG enregistré
+                          </span>
+                        )}
                       </h2>
                       {isLive && (
-                        <span
-                          style={{
-                            color: "red",
-                            fontWeight: "bold",
-                            fontSize: "14px",
-                          }}
-                        >
+                        <span style={{ color:"red", fontWeight:"bold", fontSize:"14px" }}>
                           ● LIVE MONITORING
                         </span>
                       )}
                     </div>
+
+                    {/* Badge IA si ECG existe */}
+                    {patient.lastEcg && !isLive && (
+                      <div style={{display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px'}}>
+                        {(() => {
+                          const probas = patient.lastEcg.iaInterpretations?.detailedClassification || {};
+                          if (probas.pvc > 0.5) return <span className="fiche-ia-flag fiche-ia-flag--red">🩺 PVC Detectée</span>;
+                          if (probas.sveb > 0.5) return <span className="fiche-ia-flag fiche-ia-flag--orange">🩺 SVEB Detectée</span>;
+                          return null;
+                        })()}
+                        
+                        {patient.lastEcg.iaInterpretations?.arythmie && <span className="fiche-ia-flag fiche-ia-flag--red">⚡ Arythmie</span>}
+                        {patient.lastEcg.iaInterpretations?.fibrillationAuriculaire && <span className="fiche-ia-flag fiche-ia-flag--red">🔴 Fibrillation A.</span>}
+                        {patient.lastEcg.iaInterpretations?.tachycardie && <span className="fiche-ia-flag fiche-ia-flag--orange">⚠️ Tachycardie</span>}
+                        
+                        <span style={{marginLeft:'auto', fontSize:'0.75rem', color:'#94a3b8'}}>
+                          Score : <strong style={{color: (patient.lastEcg.iaInterpretations?.scoreRisque||0)>=70?'#ef4444':(patient.lastEcg.iaInterpretations?.scoreRisque||0)>=40?'#f59e0b':'#22c55e'}}>
+                            {patient.lastEcg.iaInterpretations?.scoreRisque ?? 0}/100
+                          </strong>
+                        </span>
+                      </div>
+                    )}
+
                     <InteractiveECG
-                      points={
-                        isLive ? livePoints : patient.lastEcg?.signalData || []
-                      }
+                      points={isLive ? livePoints : patient.lastEcg?.signalData || []}
                       annotations={isLive ? liveAnnotations : []}
-                      temporalAnnotations={
-                        patient.lastEcg?.annotationsTemporelles || []
-                      }
+                      temporalAnnotations={patient.lastEcg?.annotationsTemporelles || []}
+                      heatmap={patient.lastEcg?.iaInterpretations?.xaiHeatmap || []}
                       onAddTemporalAnnotation={handleAddTemporalAnnotation}
                       sampleRate={250}
                       isLive={isLive}
@@ -700,9 +588,7 @@ function PatientFiche() {
                   <div className="fiche-ecg-card__right">
                     <button
                       className="patients-btn-action-blue"
-                      onClick={() =>
-                        navigate("/cardiologue/signaux-vitaux/historique")
-                      }
+                      onClick={() => navigate("/cardiologue/signaux-vitaux/historique")}
                     >
                       Historique Complet
                     </button>
@@ -711,6 +597,7 @@ function PatientFiche() {
               </div>
               <div className="fiche-ai-sidebar">
                 <AIInsightsCard
+
                   interpretations={patient.lastEcg?.iaInterpretations}
                   decision={patient.lastEcg?.decisionIA || "en_attente"}
                   onReview={handleReview}
@@ -753,7 +640,7 @@ function PatientFiche() {
                       {patient.alerts?.map((alert, idx) => (
                         <tr key={idx}>
                           <td>
-                            {new Date(alert.createdAt).toLocaleDateString()}
+                            {formatDate(alert.createdAt)}
                           </td>
                           <td>{alert.detail}</td>
                           <td>
@@ -763,7 +650,7 @@ function PatientFiche() {
                               {alert.type}
                             </span>
                           </td>
-                          <td>
+                        <td>
                             {alert.annotationMedecin ? (
                               <span
                                 style={{
@@ -771,7 +658,7 @@ function PatientFiche() {
                                   color: "#1e293b",
                                 }}
                               >
-                                " {alert.annotationMedecin} "
+                                {alert.annotationMedecin}
                               </span>
                             ) : (
                               <span style={{ color: "#94a3b8" }}>
@@ -809,11 +696,7 @@ function PatientFiche() {
                         {[...patient.observations].reverse().map((obs, idx) => (
                           <tr key={idx}>
                             <td>
-                              {new Date(obs.date).toLocaleDateString()}{" "}
-                              {new Date(obs.date).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {formatDateTime(obs.date)}
                             </td>
                             <td>
                               <span style={{ color: "#334155" }}>
@@ -848,7 +731,7 @@ function PatientFiche() {
                 <p style={{ padding: "40px", textAlign: "center" }}>Chargement des prescriptions...</p>
               ) : prescriptions.length === 0 ? (
                 <div className="fiche-empty-state">
-                  <span style={{ fontSize: "3rem", marginBottom: "1rem" }}>📝</span>
+                  <span style={{ fontSize: "3rem", display: "block", marginBottom: "1rem" }}>📝</span>
                   <p>Aucune ordonnance n'a été émise pour ce patient.</p>
                 </div>
               ) : (
@@ -865,7 +748,7 @@ function PatientFiche() {
                     <tbody>
                       {prescriptions.map((p) => (
                         <tr key={p._id}>
-                          <td>{new Date(p.createdAt).toLocaleDateString()}</td>
+                          <td>{formatDate(p.createdAt)}</td>
                           <td>
                             <div className="presc-med-chips">
                               {p.medicaments.map((m, i) => (
@@ -931,6 +814,133 @@ function PatientFiche() {
         onSave={handleSavePrescription}
         patientName={patient.nom}
       />
+
+      <VitauxModal
+        isOpen={isVitauxModalOpen}
+        onClose={() => setIsVitauxModalOpen(false)}
+        patientId={id}
+        patientName={patient.nom}
+        onSaved={() => fetchPatient()}
+      />
+        </>
+      )}
+
+      {/* ─── TEMPLATE DE RAPPORT PROFESSIONNEL (HIDDEN) ─── */}
+      {patient && (
+        <div 
+          ref={pdfRef} 
+          className={`pdf-report-template ${isExportingPDF ? 'active' : ''}`}
+        >
+          {/* Header */}
+          <div className="pdf-report-header">
+            <div className="pdf-report-logo">
+              💙 Caredify
+            </div>
+            <div className="pdf-report-title-group">
+              <h1>Rapport d'Examen ECG</h1>
+              <p>Réf: ECG-{patient._id?.slice(-6)} | Date: {new Date().toLocaleDateString('fr-FR')}</p>
+            </div>
+          </div>
+
+          {/* Grid: Patient Info & Clinical context */}
+          <div className="pdf-report-grid">
+            <div className="pdf-report-column">
+              <h2 className="pdf-report-section-title">Informations Patient</h2>
+              <table className="pdf-info-table">
+                <tbody>
+                  <tr><td className="pdf-info-label">Nom Complet</td><td className="pdf-info-value">{patient.nom}</td></tr>
+                  <tr><td className="pdf-info-label">Âge / CIN</td><td className="pdf-info-value">{patient.age} ans | {patient.cin}</td></tr>
+                  <tr><td className="pdf-info-label">Adresse</td><td className="pdf-info-value">{patient.adresse}</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="pdf-report-column">
+              <h2 className="pdf-report-section-title">Contexte Clinique</h2>
+              <table className="pdf-info-table">
+                <tbody>
+                  <tr><td className="pdf-info-label">Groupe Sanguin</td><td className="pdf-info-value" style={{color:'#e53e3e'}}>{patient.groupeSanguin || "—"}</td></tr>
+                  <tr><td className="pdf-info-label">Antécédents</td><td className="pdf-info-value">{patient.antecedents?.join(', ') || "Aucun"}</td></tr>
+                  <tr><td className="pdf-info-label">Traitements</td><td className="pdf-info-value">{patient.traitementsEnCours?.join(', ') || "Aucun"}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* ECG Trace */}
+          <h2 className="pdf-report-section-title">Tracé ECG Électronique (Lead I)</h2>
+          <div className="pdf-ecg-container">
+            <div className="pdf-ecg-grid-bg"></div>
+            {patient.lastEcg?.signalData?.length > 0 ? (
+              <svg viewBox="0 0 1000 200" className="pdf-ecg-trace-svg">
+                <polyline
+                  fill="none"
+                  stroke="#222"
+                  strokeWidth="1.5"
+                  points={patient.lastEcg.signalData.slice(0, 1000)
+                    .map((val, i) => `${i},${100 - val * 70}`)
+                    .join(" ")}
+                />
+              </svg>
+            ) : (
+              <p style={{textAlign:'center', padding:'40px', color:'#888'}}>Aucun tracé disponible</p>
+            )}
+          </div>
+
+          {/* AI Findings */}
+          <h2 className="pdf-report-section-title">Analyse Automatisée (Modèle IA v2.0)</h2>
+          <div className="pdf-risk-summary" style={{display:'flex', justifyContent:'space-between', marginBottom:'10px'}}>
+             <span style={{fontSize:'12px', fontWeight:700}}>Score de Risque Global: <span style={{color: (patient.lastEcg?.iaInterpretations?.scoreRisque > 70 ? '#ef4444' : '#f59e0b')}}>{patient.lastEcg?.iaInterpretations?.scoreRisque || 0}%</span></span>
+             <span style={{fontSize:'12px', color:'#64748b'}}>Statut: {patient.lastEcg?.decisionIA?.toUpperCase() || "EN ATTENTE"}</span>
+          </div>
+          
+          <table className="pdf-findings-table">
+            <thead>
+              <tr>
+                <th style={{width:'150px'}}>Anomalie Détectée</th>
+                <th>Explication Clinique & Recommandation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {patient.lastEcg?.iaInterpretations && Object.entries(patient.lastEcg.iaInterpretations)
+                .filter(([key, val]) => val === true && CLINICAL_DATA[key])
+                .map(([key]) => (
+                  <tr key={key}>
+                    <td>
+                      <span className="pdf-severity-dot" style={{background: CLINICAL_DATA[key].severity === 'critical' ? '#ef4444' : '#f59e0b'}}></span>
+                      <strong>{CLINICAL_DATA[key].label}</strong>
+                    </td>
+                    <td>
+                      <p style={{margin:0}}><strong>Mécanisme:</strong> {CLINICAL_DATA[key].explanation}</p>
+                      <p style={{margin:'5px 0 0', color:'#2563eb'}}><strong>Action:</strong> {CLINICAL_DATA[key].recommendation}</p>
+                    </td>
+                  </tr>
+                ))}
+              {!patient.lastEcg?.iaInterpretations && (
+                <tr><td colSpan="2" style={{textAlign:'center'}}>Aucune donnée d'analyse disponible</td></tr>
+              )}
+            </tbody>
+          </table>
+
+          {/* Observations */}
+          <h2 className="pdf-report-section-title">Observations du Cardiologue</h2>
+          <div className="pdf-doctor-notes">
+            {patient.lastEcg?.annotationMedecin || "Aucune observation manuelle ajoutée pour cet examen."}
+          </div>
+
+          {/* Footer */}
+          <div className="pdf-footer">
+            <div>
+              <p>Document généré électroniquement par le système Caredify.</p>
+              <p>ID Rapport: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+            </div>
+            <div className="pdf-signature-section">
+              <div className="pdf-signature-line">
+                Signature du Spécialiste
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </MedicalLayout>
   );
 }

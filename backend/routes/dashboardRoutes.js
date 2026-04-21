@@ -97,7 +97,7 @@ router.get("/stats", protect, doctor, async (req, res, next) => {
       ECGRecord.findOne({ medecin: medecinId })
         .populate("patient", "nom prenom")
         .sort({ createdAt: -1 })
-        .select("patient createdAt iaInterpretations.scoreRisque iaInterpretations.resumeIA revue"),
+        .select("patient createdAt signalData iaInterpretations annotationMedecin revue decisionIA"),
 
       // Trends (Daily averages last 7 days)
       Vitals.aggregate([

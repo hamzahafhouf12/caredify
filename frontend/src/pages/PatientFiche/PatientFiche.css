@@ -619,3 +619,227 @@
   background: #2563eb;
   color: white;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PROFESSIONAL PDF REPORT TEMPLATE
+   ═══════════════════════════════════════════════════════════ */
+.pdf-report-template {
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
+  width: 210mm;
+  min-height: 297mm;
+  background: white;
+  color: #1a202c;
+  padding: 20mm;
+  font-family: 'Inter', -apple-system, sans-serif;
+  line-height: 1.5;
+  box-sizing: border-box;
+  z-index: -1000;
+}
+
+.pdf-report-template.active {
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.pdf-report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #2563eb;
+  padding-bottom: 15px;
+  margin-bottom: 25px;
+}
+
+.pdf-report-logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pdf-report-title-group {
+  text-align: right;
+}
+
+.pdf-report-title-group h1 {
+  font-size: 20px;
+  color: #1e293b;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.pdf-report-title-group p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+
+.pdf-report-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 25px;
+}
+
+.pdf-report-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 4px;
+}
+
+.pdf-info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pdf-info-table td {
+  padding: 4px 0;
+  font-size: 12px;
+}
+
+.pdf-info-label {
+  color: #64748b;
+  width: 110px;
+  font-weight: 600;
+}
+
+.pdf-info-value {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.pdf-ecg-container {
+  margin: 25px 0;
+  background: #fdf2f2; /* Light pink like ECG paper */
+  border: 1px solid #fecaca;
+  padding: 10px;
+  position: relative;
+}
+
+.pdf-ecg-grid-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(#fecaca 1px, transparent 1px),
+    linear-gradient(90deg, #fecaca 1px, transparent 1px),
+    linear-gradient(#fee2e2 0.5px, transparent 0.5px),
+    linear-gradient(90deg, #fee2e2 0.5px, transparent 0.5px);
+  background-size: 25px 25px, 25px 25px, 5px 5px, 5px 5px;
+}
+
+.pdf-ecg-trace-svg {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  z-index: 2;
+}
+
+.pdf-findings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.pdf-findings-table th {
+  background: #f8fafc;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.pdf-findings-table td {
+  padding: 10px 12px;
+  font-size: 11px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: top;
+}
+
+.pdf-severity-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.pdf-doctor-notes {
+  margin-top: 30px;
+  padding: 15px;
+  background: #f8fafc;
+  border-left: 4px solid #cbd5e1;
+  font-style: italic;
+  font-size: 12px;
+  color: #334155;
+  min-height: 80px;
+}
+
+.pdf-footer {
+  margin-top: auto;
+  padding-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.pdf-signature-line {
+  width: 200px;
+  border-top: 1px solid #475569;
+  text-align: center;
+  padding-top: 8px;
+  color: #475569;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BADGES IA — Section ECG
+   ═══════════════════════════════════════════════════════════ */
+.fiche-ia-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.fiche-ia-flag--red    { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+.fiche-ia-flag--orange { background: #fffbeb; color: #f59e0b; border: 1px solid #fde68a; }
+.fiche-ia-flag--green  { background: #f0fdf4; color: #22c55e; border: 1px solid #bbf7d0; }
+.cdash--dark .fiche-ia-flag--red    { background: rgba(239,68,68,0.12);  color: #fca5a5; border-color: rgba(239,68,68,0.25); }
+.cdash--dark .fiche-ia-flag--orange { background: rgba(245,158,11,0.12); color: #fcd34d; border-color: rgba(245,158,11,0.25); }
+.cdash--dark .fiche-ia-flag--green  { background: rgba(34,197,94,0.12);  color: #86efac; border-color: rgba(34,197,94,0.25); }
+
+/* ── Vital card label colored value ── */
+.fiche-vital-card__label strong {
+  font-size: 1.1rem;
+}
+
+/* ── Vitaux vide state ── */
+.fiche-section .fiche-empty-state {
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-page);
+}
+.cdash--dark .fiche-section .fiche-empty-state {
+  border-color: var(--dark-border);
+  background: rgba(255,255,255,0.02);
+}
+
