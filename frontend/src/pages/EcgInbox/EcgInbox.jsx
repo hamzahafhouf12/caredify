@@ -127,30 +127,16 @@ function SimulateModal({ isOpen, onClose, patients, onSimulated }) {
       pSignal.push(val + (Math.random() - 0.5) * 0.05);
     }
 
-    const iaData = {
-      scoreRisque: type === "critique" ? 85 : type === "modéré" ? 45 : 12,
-      detailedClassification: {
-        normal: type === "normal" ? 0.95 : 0.05,
-        pvc: type === "critique" ? 0.88 : (type === "modéré" ? 0.4 : 0.02),
-        sveb: type === "modéré" ? 0.3 : 0.01,
-        fusion: 0.01,
-        unclassified: 0.01
-      },
-      resumeIA: type === "critique"
-        ? "⚠️ Suspicion forte de PVC (Extrasystoles Ventriculaires) avec complexes larges détectés."
-        : type === "modéré"
-          ? "Observation d'arythmies supraventriculaires isolées."
-          : "Rythme sinusal normal sans anomalie majeure.",
-      xaiHeatmap: xaiHeatmap
-    };
-
+    // ─── On laisse le backend appeler le service IA automatiquement ───
+    // En ne fournissant PAS d'iaInterpretations, le backend déclenchera
+    // l'analyse IA automatique via aiService.js
     try {
       const res = await apiPost("/ecg/record", {
         patientId: selectedPatient,
         signalData: pSignal,
         frequenceEchantillonnage: 250,
         source: "simulation",
-        iaInterpretations: iaData,
+        // iaInterpretations: omis intentionnellement → analyse IA automatique côté backend
       });
 
       if (res.ok) {
@@ -262,6 +248,8 @@ export default function EcgInbox() {
   const [filter, setFilter] = useState("pending"); // "pending" | "all"
   const [search, setSearch] = useState("");
   const [selectedEcg, setSelectedEcg] = useState(null);
+  const [analyzingId, setAnalyzingId] = useState(null); // ECG en cours de re-analyse IA
+  const [aiStatus, setAiStatus] = useState(null); // { id, success, message }
 
   const handlePatientClick = (pid) => {
     localStorage.setItem("activePatientId", pid);
@@ -307,6 +295,34 @@ export default function EcgInbox() {
       }
     } catch (err) {
       console.error("Review error:", err);
+    }
+  };
+
+  const handleReanalyze = async (ecg) => {
+    setAnalyzingId(ecg._id);
+    setAiStatus(null);
+    try {
+      const res = await apiPost(`/ecg/${ecg._id}/reanalyze`, {});
+      if (res.ok) {
+        const updated = await res.json();
+        const updateFn = (prev) => prev.map((e) => e._id === updated._id ? updated : e);
+        setEcgs(updateFn);
+        setAllEcgs(updateFn);
+        if (selectedEcg?._id === updated._id) setSelectedEcg(updated);
+        setAiStatus({
+          id: ecg._id,
+          success: true,
+          message: `✅ Analyse IA terminée — Score: ${updated.iaInterpretations?.scoreRisque ?? "?"}/100`,
+        });
+      } else {
+        const err = await res.json();
+        setAiStatus({ id: ecg._id, success: false, message: `❌ ${err.message || "Erreur analyse IA"}` });
+      }
+    } catch (err) {
+      setAiStatus({ id: ecg._id, success: false, message: "❌ Service IA indisponible" });
+    } finally {
+      setAnalyzingId(null);
+      setTimeout(() => setAiStatus(null), 4000);
     }
   };
 
@@ -488,21 +504,62 @@ export default function EcgInbox() {
                     </div>
                   </div>
 
+                  {/* Status notification IA */}
+                  {aiStatus?.id === ecg._id && (
+                    <div style={{
+                      margin: "8px 0",
+                      padding: "8px 14px",
+                      borderRadius: "8px",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                      background: aiStatus.success ? "#f0fdf4" : "#fef2f2",
+                      color: aiStatus.success ? "#16a34a" : "#dc2626",
+                      border: `1px solid ${aiStatus.success ? "#bbf7d0" : "#fecaca"}`,
+                      animation: "fadeIn 0.3s ease",
+                    }}>
+                      {aiStatus.message}
+                    </div>
+                  )}
+
                   {/* Actions */}
                   <div className="inbox-card-bottom">
-                      <button
-                        className="inbox-btn inbox-btn-profile"
-                        onClick={() => setSelectedEcg(ecg)}
-                      >
-                        📊 Analyser (XAI)
-                      </button>
-                      <button
-                        className="inbox-btn inbox-btn-profile"
-                        style={{ marginLeft: '5px' }}
-                        onClick={() => handlePatientClick(ecg.patient?._id)}
-                      >
-                        👤 Profil
-                      </button>
+                    <button
+                      className="inbox-btn inbox-btn-profile"
+                      onClick={() => setSelectedEcg(ecg)}
+                    >
+                      📊 Analyser (XAI)
+                    </button>
+                    <button
+                      className="inbox-btn inbox-btn-profile"
+                      style={{ marginLeft: '5px' }}
+                      onClick={() => handlePatientClick(ecg.patient?._id)}
+                    >
+                      👤 Profil
+                    </button>
+
+                    {/* ─── Bouton Re-analyse IA ─── */}
+                    <button
+                      className="inbox-btn"
+                      style={{
+                        marginLeft: '5px',
+                        background: analyzingId === ecg._id ? '#e2e8f0' : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                        color: analyzingId === ecg._id ? '#64748b' : 'white',
+                        border: 'none',
+                        cursor: analyzingId === ecg._id ? 'not-allowed' : 'pointer',
+                        fontWeight: 600,
+                        transition: 'all 0.2s',
+                      }}
+                      onClick={() => handleReanalyze(ecg)}
+                      disabled={analyzingId === ecg._id}
+                      title="Relancer l'analyse IA sur ce tracé ECG"
+                    >
+                      {analyzingId === ecg._id ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span style={{ display: 'inline-block', width: '12px', height: '12px', border: '2px solid #94a3b8', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                          Analyse...
+                        </span>
+                      ) : "🤖 Analyser IA"}
+                    </button>
 
                     {!isReviewed ? (
                       <div className="inbox-actions-right">

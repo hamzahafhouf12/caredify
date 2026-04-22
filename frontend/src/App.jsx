@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import CardiologueDashboard from "./pages/CardiologueDashboard/CardiologueDashboard";
-import CliniqueDashboard from "./pages/CliniqueDashboard/CliniqueDashboard";
 import RoleSelect from "./pages/RoleSelect/RoleSelect";
 import Register from "./pages/Register/Register";
 import OTPVerify from "./pages/OTPVerify/OTPVerify";
@@ -36,16 +35,6 @@ function App() {
           element={
             <PrivateRoute allowedRoles={["admin"]}>
               <AdminDashboard />
-            </PrivateRoute>
-          }
-        />
-
-        {/* Protected Clinique Routes */}
-        <Route
-          path="/clinique"
-          element={
-            <PrivateRoute allowedRoles={["clinique", "admin"]}>
-              <CliniqueDashboard />
             </PrivateRoute>
           }
         />

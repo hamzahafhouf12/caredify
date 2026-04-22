@@ -66,9 +66,9 @@ const ecgRecordSchema = new mongoose.Schema(
     // Annotations temporelles spécifiques sur le tracé ECG
     annotationsTemporelles: [
       {
-        startTime: { type: Number, required: true }, // in seconds
-        endTime: { type: Number, required: true },   // in seconds
-        note: { type: String, required: true },
+        index:    { type: Number, required: true }, // sample index in signal array
+        label:    { type: String, required: true }, // annotation text
+        color:    { type: String, default: "#ef4444" },
         medecinId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         createdAt: { type: Date, default: Date.now }
       }

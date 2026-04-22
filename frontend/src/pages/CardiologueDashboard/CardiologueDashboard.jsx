@@ -353,7 +353,7 @@ function CardiologueDashboard() {
                   {formatTime(stats.dernierECG.createdAt)}
                 </span>
               )}
-              <Link to="/cardiologue/ecg-inbox" className="v3-link-blue" style={{ fontSize: "0.8rem" }}>
+              <Link to="/cardiologue/reception-ecg" className="v3-link-blue" style={{ fontSize: "0.8rem" }}>
                 Boîte ECG →
               </Link>
             </div>
